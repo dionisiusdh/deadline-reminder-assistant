@@ -4,6 +4,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from firebase import db
 
+from constants import TASK_FIRESTORE_COLLECTIONS
+from utils import firestoreQueryResultsToDictArray
+
 
 app = Flask(__name__)
 CORS(app)
@@ -14,14 +17,36 @@ CORS(app)
 # get all task
 @app.route("/task", methods=["GET"])
 def getAllTask():
+    try:
+        filterParamNames = ["mataKuliah", "jenis", "topik"]
 
-    print("Get Request received")
+        # get all data from collection
+        tasksResult = db.collection(TASK_FIRESTORE_COLLECTIONS)
 
-    res = {
-        "message": "get endpoint success"
-    }
+        # filter
+        for filterParamName in filterParamNames:
+            filterParamValue = request.args.get(filterParamName)
 
-    return jsonify(res)
+            if filterParamValue is not None:
+                tasksResult = tasksResult.where(
+                    filterParamName, "==", filterParamValue)
+
+        tasks = firestoreQueryResultsToDictArray(tasksResult.stream())
+
+        res = {
+            "message": "Success getting all task data",
+            "data": {
+                "tasks": tasks
+            }
+        }
+
+    except:
+        res = {
+            "message": "Error occured on querying all task data"
+        }
+
+    finally:
+        return jsonify(res)
 
 
 # add task
@@ -34,12 +59,24 @@ def addTask():
         mataKuliah = requestBody["mataKuliah"]
         jenis = requestBody["jenis"]
         topik = requestBody["topik"]
-        taskId = uuid.uuid4()
+        taskId = str(uuid.uuid4())
 
-        print(requestBody)
+        taskData = {
+            "taskId": taskId,
+            "tanggal": tanggal,
+            "mataKuliah": mataKuliah,
+            "jenis": jenis,
+            "topik": topik
+        }
+
+        taskRef = db.collection(TASK_FIRESTORE_COLLECTIONS).document(taskId)
+        taskRef.set(taskData)
 
         res = {
-            "message": "post endpoint success"
+            "message": "post endpoint success",
+            "data": {
+                "task": taskData
+            }
         }
 
     except KeyError:
