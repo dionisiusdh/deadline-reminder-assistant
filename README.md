@@ -17,4 +17,7 @@ deactivate
 3. pip freeze
 4. copy the result of pip freeze to requirements.txt
 
+### Installing dependencies
+1. pip install -r requirements.txt
+
 ### Frontend
