@@ -33,6 +33,7 @@ const MessageBox = (props) => {
             .msg-content-box {
                 max-width: 90%;
                 border-radius: 5px;
+                word-break:break-word;
             }
 
             .msg-content-box-user {

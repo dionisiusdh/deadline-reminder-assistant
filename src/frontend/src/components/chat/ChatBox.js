@@ -9,8 +9,6 @@ const ChatBox = () => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  
-
   const messagesTest = [
     {
       sender: "bot",
@@ -38,8 +36,8 @@ const ChatBox = () => {
             .chat-box {
                 background: #191919;
                 width: 60%;
-                height: 500px;
-                max-height: 500px;
+                height: 75vh;
+                max-height: 75vh;
                 
             }
           `}

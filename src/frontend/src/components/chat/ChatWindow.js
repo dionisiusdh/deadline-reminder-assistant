@@ -27,10 +27,10 @@ const ChatWindow = (props) => {
             ::-webkit-scrollbar {
                 width: .5rem;
               }
-              ::-webkit-scrollbar-thumb {
-                background-color: #777777;
-                border-radius: 2px;
-              }
+            ::-webkit-scrollbar-thumb {
+            background-color: #777777;
+            border-radius: 2px;
+            }
             
         `}
       </style>
