@@ -42,24 +42,45 @@ const MessageBox = (props) => {
   };
   return (
     <>
-      <div className={`msg d-flex ${getMessageClassName()}`}>
-        <div className={`msg-content-box m-1 ${getMessageBoxClassName()}`}>
-          <p className="msg-content">{getParsedString(message.content)}</p>
-        </div>
+      <div className={`msg d-flex align-items-center ${getMessageClassName()}`}>
+        {message.sender == "user" ? (
+          <>
+            <div className={`msg-content-box m-1 ${getMessageBoxClassName()}`}>
+              <p className="msg-content">{getParsedString(message.content)}</p>
+            </div>
+            <img
+              src="https://i.pinimg.com/originals/51/f6/fb/51f6fb256629fc755b8870c801092942.png"
+              alt="pic"
+            />
+          </>
+        ) : (
+          <>
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSsiNvOHxUiSPKEUAS3h2lIfU-RRDugpDidA&usqp=CAU"
+              alt="pic"
+            />
+            <div className={`msg-content-box m-1 ${getMessageBoxClassName()}`}>
+              <p className="msg-content">{getParsedString(message.content)}</p>
+            </div>
+          </>
+        )}
       </div>
       <style>
         {`
             .msg {
                 width: 100%;
+                margin-bottom: 10px;
             }
             .msg-content-box {
-                max-width: 90%;
-                border-radius: 5px;
+                max-width: 80%;
+                line-height: 20px;
+                border-radius: 20px;
                 word-break:break-word;
             }
 
             .msg-content-box-user {
-                background: #B5BD89;
+                color: #FFF;
+                background: #0b93f6;
             }
 
             .msg-content-box-bot {
@@ -68,10 +89,15 @@ const MessageBox = (props) => {
 
             .msg-content {
                 padding: 0;
-                margin: .5rem 1.5rem;
+                margin: .7rem 1.3rem;
             }
 
-
+            img {
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              margin: 2px 5px;
+            }
           `}
       </style>
     </>

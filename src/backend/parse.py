@@ -106,7 +106,8 @@ def case_show_all_task(x):
 
     # Keywords
     main_keywords_1 = ["lihat", "liat", "apa saja",
-                       "apa aja", "apa aj", "apa sj", "buat"]
+                       "apa aja", "apa aj", "apa sj",
+                       "buat", "daftar", "list"]
     main_keywords_2 = ["deadline", "tugas", "dilakukan", "ada"]
 
     if (isPatternExistKMP(main_keywords_1, x, False) and isPatternExistKMP(main_keywords_2, x, False)):
@@ -177,7 +178,7 @@ def case_update_task(x):
     x = x.lower()                                   # lower case x agar seragam
 
     # taskId db panjang
-    taskId = (get_number(x))[0]
+    taskId = get_number(x)
     changeDate = get_date(x)
 
     # Keywords
@@ -188,11 +189,11 @@ def case_update_task(x):
         "tubes", "praktikum"
     ]
 
-    if (isPatternExistKMP(main_keywords_1, x, False) and isPatternExistKMP(main_keywords_2, x, False) and len(changeDate) != 0):
-        tasks = db.collection(TASK_FIRESTORE_COLLECTIONS).document(taskId)
+    if (isPatternExistKMP(main_keywords_1, x, False) and isPatternExistKMP(main_keywords_2, x, False) and len(changeDate) != 0 and len(taskId) != 0):
+        tasks = db.collection(TASK_FIRESTORE_COLLECTIONS).document(taskId[0])
         update_data = {"tanggal": changeDate[0]}
         tasks.update(update_data)
-        return {"message": f"Berhasil mengubah deadline task {taskId} menjadi {changeDate[0]}"}
+        return {"message": f"Berhasil mengubah deadline task {taskId[0]} menjadi {changeDate[0]}"}
 
     # return {"message": f"Tidak dapat melakukan pengubahan deadline. Coba cek ID task kamu!"}
     return False

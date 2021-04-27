@@ -12,7 +12,7 @@ const ChatBox = () => {
   const messagesTest = [
     {
       sender: "bot",
-      content: "Welcome to GhemBOT",
+      content: "Halo! Namaku GhemBOT, personal assistant kamu!",
     },
   ];
 
@@ -33,8 +33,8 @@ const ChatBox = () => {
             .chat-box {
                 background-color: rgb(40, 37, 53);
                 width: 60%;
-                height: 80vh;
-                max-height: 80vh;
+                height: 86.5vh;
+                max-height: 86.5vh;
             }
           `}
       </style>

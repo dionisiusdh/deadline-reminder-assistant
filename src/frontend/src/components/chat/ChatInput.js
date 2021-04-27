@@ -91,6 +91,15 @@ const ChatInput = (props) => {
                 color: white;
                 border: none;
                 border-radius: 7px;
+                transition: .2s;
+            }
+
+            .chat-input-btn:hover {
+              transform: scale(1.07);
+            }
+
+            .chat-input-btn:focus {
+              outline: none;
             }
           `}
       </style>
