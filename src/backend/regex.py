@@ -25,7 +25,7 @@ def get_matkul(x):
     Asumsikan tanggal selalu valid berformat XXYYYY seperti IF1212
     return : list of kode mata kuliah
     """
-    return re.findall(r"^[a-zA-Z]{2}\d{4}", x)
+    return re.findall(r"[^a-zA-Z0-9]?[a-zA-Z]{2}\d{4}[^a-zA-Z0-9]?", x)
 
 def get_number(x):
     """
