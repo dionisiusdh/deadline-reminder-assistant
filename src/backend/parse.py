@@ -256,48 +256,44 @@ def case_get_deadline_task(x):
         main_keywords_1, x, False) and isPatternExistKMP(main_keywords_2, x, False)
 
     matkulNames = get_matkul(x)
+    matkulNames = [matkul.strip() for matkul in matkulNames]
     isMatkulExist = len(matkulNames) > 0
 
-    print(isMainKeyWordsExist)
-    print(isTugasExist)
-    print(isMatkulExist)
-    print(matkulNames)
-    print(x[:len(x)-1])
+    if isMainKeyWordsExist and isTugasExist and isMatkulExist:
+        # get the data with the same matkul name and the same jenis
+        tasks = []
 
-    # if isMainKeyWordsExist and isTugasExist and isMatkulExist:
-    #     # get the data with the same matkul name and the same jenis
-    #     tasks = []
+        # since we are only able to use 'in' query once only, getting the data based on the jenis are done manually
+        tasksResult = db.collection(TASK_FIRESTORE_COLLECTIONS).where(
+            "mataKuliah", "in", matkulNames)
 
-    #     # since we are only able
-    #     for matkul in matkulNames:
-    #         tasksResult = db.collection(TASK_FIRESTORE_COLLECTIONS).where("mataKuliah", "in", matkulNames)
+        # manually query to find the suitable jenis attribute
+        if (isTucilExist):
+            taskQueryResult = tasksResult.where("jenis", "==", "tucil")
+            tasks += firestoreQueryResultsToDictArray(
+                taskQueryResult.stream())
+        if (isTubesExist):
+            taskQueryResult = tasksResult.where("jenis", "==", "tubes")
+            tasks += firestoreQueryResultsToDictArray(
+                taskQueryResult.stream())
 
-    #         if (isTucilExist):
-    #             tugasKeywords.append("tucil")
-    #         if (isTubesExist):
-    #             tugasKeywords.append("tubes")
+        if (len(tasks) == 0):
+            return {"message": f"Tidak ditemukan deadline"}
+        else:
+            messageResponse = "[DEADLINE]\n"
 
-    #     .where("jenis", "in", tugasKeywords)
+            for i in range(len(tasks)):
+                task = tasks[i]
 
-    #     tasks = firestoreQueryResultsToDictArray(tasksResult.stream())
+                if (i != 0):
+                    messageResponse += "\n"
 
-    #     if (len(tasks) == 0):
-    #         return {"message": f"Tidak ditemukan deadline untuk "}
-    #     else:
-    #         messageResponse = ""
+                messageResponse += f'{i + 1}. {task["mataKuliah"]} - {task["topik"]} : {task["tanggal"]}'
 
-    #         for i in range(len(tasks)):
+            return {"message": messageResponse}
 
-    #             if (i != 0):
-    #                 messageResponse += "\n"
-
-    #             tasks = tasks[i]
-    #             messageResponse += f'{i + 1}. {task["mataKuliah"]}-{task["topik"]} : {task["tanggal"]}'
-
-    #         return {"message": messageResponse}
-
-    # else:
-    #     return False
+    else:
+        return False
 
 
 def case_other(x):
