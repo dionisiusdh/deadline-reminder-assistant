@@ -12,7 +12,52 @@ from date import *
 from utils import *
 
 # ===== KEYWORDS =====
-keywords_task = ["Kuis", "Ujian", "Tucil", "Tubes", "Praktikum"]
+keywords_task = ["Kuis", "Ujian", "Tucil",
+                 "Tubes", "Praktikum", "Tugas", "PR", "Ulangan"]
+
+
+def case_add_task(x):
+    """
+    Mereturn true jika string x merupakan command untuk
+    Menambah sebuah task baru
+    return : boolean
+    """
+    x = x.lower()                                   # lower case x agar seragam
+
+    res = {
+        "type": "add",
+        "tanggal": "",
+        "kodeMatkul": "",
+        "jenis": "",
+        "topik": ""
+    }
+
+    # Keywords
+    preposition_keywords = ["pada", "ketika"]
+
+    listTanggal = get_date(x)
+    listMatkul = get_matkul(x)
+    listJenis = get_all_same_pattern(keywords_task, x)
+    # Masih asumsi hanya ada satu preposisi
+    listPreposition = get_all_same_pattern(preposition_keywords, x)
+
+    if (len(listTanggal) == 1 and len(listMatkul) == 1 and len(listJenis) == 1 and len(listPreposition) == 1):
+
+        res["tanggal"] = listTanggal[0].strip(" ")
+        res["kodeMatkul"] = listMatkul[0].strip(" ")
+        res["jenis"] = listJenis[0].strip(" ")
+
+        # Get Index Of Important Keywords
+        # Asumsikan bahwa topik selalu diapit oleh <Kode Kuliah> dan <preposition_keywords>
+        startIndex = int(KMP(res["kodeMatkul"], x, False)[0]) + 6
+        wordFound = False
+        endIndex = int(KMP(listPreposition[0], x, False)[0])
+
+        res["topik"] = x[startIndex:endIndex].strip(" ")
+
+        return res
+
+    return False
 
 
 def case_show_all_task(x):
@@ -243,19 +288,46 @@ def parse(x):
 #     "Tugas 3 dimajuin ke 28-04-2021"
 # ]
 
+    # if (case_show_all_task(x)):
+    #     res = case_show_all_task(x)
+    # elif (case_update_task(x)):
+    #     res = case_update_task(x)
+    # elif (case_help(x)):
+    #     res = case_help(x)
+    # if (case_add_task(x)):
+    #     res = case_add_task(x)
+    #     print(f"{test} : {res}")
+    #     return res
+    # else:
+    #     res = case_error()
 
-# for test in tests:
-#     parse(test)
 
-
-testsHelp = [
-    "apa yang bisa ghembot lakukan",
-    "Apa yang bisa assistant lakukan",
-    "bot bisa ngapain aja",
-    "help",
-    "bot ngapain ",
-    "hlp"
+tests = [
+    "Apa aj deadline yang dimiliki sejauh ini?",
+    "Buat beberapa hari ke depan ada kuis apa aja?",
+    "Deadline tugas IF2211 itu kapan?",
+    "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
+    "2 Minggu ke dpan ada praktikum apa aj?",
+    "Tugas buat 2 hari kedepan",
+    "Hri ini ada tubes apa aja?",
+    "Deadline tugas ID 2 diganti ke 28/04/2021",
+    "Tugas 3 dimajuin ke 28-04-2021",
+    "Tubes IF2211 String Matching pada 14/04/2021"
 ]
+
+
+for test in tests:
+    parse(test)
+
+
+# testsHelp = [
+#     "apa yang bisa ghembot lakukan",
+#     "Apa yang bisa assistant lakukan",
+#     "bot bisa ngapain aja",
+#     "help",
+#     "bot ngapain ",
+#     "hlp"
+# ]
 
 
 # for test in testsHelp:
