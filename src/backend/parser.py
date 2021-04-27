@@ -54,6 +54,34 @@ def case_add_task(x):
 
     return False
 
+def case_mark_task_done(x):
+    """
+    Mereturn true jika string x merupakan command untuk
+    Menandai sebuah task done
+    return : boolean
+    """
+
+    x = x.lower()                                   # lower case x agar seragam
+
+    res = {
+        "type":"delete",
+        "taskId": "",
+    }
+
+    # taskId db panjang
+    taskId = "DUMMY"
+
+    done_keywords = ["udah", "sudah", "udh", "selesai", "usai", "tuntas", "tamat", "kelar", "klr", "lewat", "sls"]
+
+    listDone = get_all_same_pattern(done_keywords, x)
+    listTask = get_all_same_pattern(keywords_task, x)
+
+    if (len(listDone) > 0 and len(listTask) > 0):
+        res["taskId"] = taskId
+        return res
+    return False
+
+
 def case_show_all_task(x):
     """
     Mereturn true jika string x merupakan command untuk
@@ -208,8 +236,8 @@ def parse(x):
     #     res = case_update_task(x)
     # elif (case_help(x)):
     #     res = case_help(x)
-    if (case_add_task(x)):
-        res = case_add_task(x)
+    if (case_mark_task_done(x)):
+        res = case_mark_task_done(x)
         print(f"{test} : {res}")
         return res
     # else:
@@ -225,7 +253,8 @@ tests=[
     "Hri ini ada tubes apa aja?",
     "Deadline tugas ID 2 diganti ke 28/04/2021",
     "Tugas 3 dimajuin ke 28-04-2021",
-    "Tubes IF2211 String Matching pada 14/04/2021"
+    "Tubes IF2211 String Matching pada 14/04/2021",
+    "Tubes IF2211 String Matching dah kelar"
 ]
 
 
