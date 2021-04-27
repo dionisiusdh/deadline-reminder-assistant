@@ -300,6 +300,40 @@ def case_get_deadline_task(x):
     #     return False
 
 
+def case_other(x):
+    main_keywords_1 = ["thank you", "thanks", "thx", "makasih",
+                       "makasi", "terima kasih", "trmks", "trims"]    # Thank you
+
+    main_keywords_2 = ["halo", "hlo", "hai", "hi", "selamat"]
+
+    if (isPatternExistKMP(main_keywords_1, x, False)):
+        messages = [
+            "Sama-sama",
+            "Terima kasih kembali :)",
+            "Yoii sama-sama",
+            "Sipp"
+        ]
+
+        random = randrange(0, len(messages)-1)
+
+        return {"message": messages[random]}
+    elif (isPatternExistKMP(main_keywords_2, x, False)):
+        messages = [
+            "Halo!",
+            "Hi!",
+            "Halo juga",
+            "Hai juga",
+            "Senang bertemu dengan mu",
+            "Sup bro"
+        ]
+
+        random = randrange(0, len(messages)-1)
+
+        return {"message": messages[random]}
+
+    return False
+
+
 def parse(x):
     """
     Main parse
@@ -312,6 +346,8 @@ def parse(x):
         res = case_get_deadline_task(x)
     elif (case_help(x)):
         res = case_help(x)
+    elif (case_other(x)):
+        res = case_other(x)
     else:
         res = case_error()
 
