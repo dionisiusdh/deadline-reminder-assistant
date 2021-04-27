@@ -2,12 +2,17 @@
 Modul Algoritma KMP dan Boyer-Moore
 """
 
-def KMP(pat, txt):
+def KMP(pat, txt, case_sensitive=True):
     """
     Algoritma KMP untuk mencari pattern pat pada string txt
+    Memiliki mode case sensitive dan tidak
     return : jika pattern ditemukan, array index awal ditemukannya pattern (dimulai dari 0)
              jika pattern tidak ditemukan, maka direturn []
     """
+    if (not case_sensitive):
+        pat = pat.lower()
+        txt = txt.lower()
+
     lps = findLPS(pat)
     res = []
 
@@ -46,4 +51,11 @@ def findLPS(pat):
 
     return lps
 
-print(KMP("ABC", "AAABABCBBABC"))
+def isPatternExistKMP(listPat, txt, case_sensitive=True):
+    # Mereturn true jika salah satu dari list pattern terdapat pada string txt
+    for pat in listPat:
+        if (KMP(pat, txt, case_sensitive) != []):
+            return True
+    return False
+
+# print(isPatternExistKMP(["AD","BD"], "AAABABCBBABC"))
