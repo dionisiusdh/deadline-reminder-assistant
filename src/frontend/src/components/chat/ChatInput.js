@@ -1,25 +1,52 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 const ChatInput = (props) => {
   const { scrollToBottom, addMessages } = props;
   const [inputContent, setInputContent] = useState("");
 
   const handleSendMessage = async () => {
-    console.log(inputContent);
-    const newMessages = [
-      {
-        sender: "user",
-        content: inputContent,
-      },
-      {
-        sender: "bot",
-        content: "Maaf, pesan tidak dikenali",
-      },
-    ];
+    if (inputContent.trim()) {
+      console.log(inputContent);
 
-    await addMessages(newMessages);
-    setInputContent("");
-    scrollToBottom();
+      var newMessages = [
+        {
+          sender: "user",
+          content: inputContent,
+        },
+      ];
+
+      setInputContent("");
+
+      const requestBody = {
+        msg: inputContent,
+      };
+
+      axios
+        .post("http://localhost:5000/bot", requestBody)
+        .then((res) => {
+          console.log(res.data.reply);
+          const reply = {
+            sender: "bot",
+            content: res.data.reply,
+          };
+
+          newMessages = [...newMessages, reply];
+        })
+        .catch(() => {
+          console.log("errr");
+          const reply = {
+            sender: "bot",
+            content: "Error occured!",
+          };
+
+          newMessages = [...newMessages, reply];
+        })
+        .finally(() => {
+          addMessages(newMessages);
+          scrollToBottom();
+        });
+    }
   };
 
   return (

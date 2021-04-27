@@ -92,6 +92,21 @@ def addTask():
     finally:
         return jsonify(res)
 
+# bot
+
+
+@app.route("/bot", methods=["POST"])
+def getChatbotReply():
+
+    requestBody = request.get_json()
+    message = requestBody["msg"]
+
+    res = {
+        "reply": f"Maaf pesan tidak dikenali : {message}"
+    }
+
+    return jsonify(res)
+
 
 PORT = 5000
 if __name__ == "__main__":
