@@ -3,9 +3,9 @@ import uuid
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from firebase import db
-
 from constants import TASK_FIRESTORE_COLLECTIONS
 from utils import firestoreQueryResultsToDictArray
+from parser import parse
 
 
 app = Flask(__name__)
@@ -101,11 +101,7 @@ def getChatbotReply():
     requestBody = request.get_json()
     message = requestBody["msg"]
 
-    res = {
-        "reply": f"Maaf pesan tidak dikenali : {message}"
-    }
-
-    return jsonify(res)
+    return jsonify(parse(message))
 
 
 PORT = 5000

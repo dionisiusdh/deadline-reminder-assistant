@@ -18,11 +18,33 @@ const MessageBox = (props) => {
       return "msg-content-box-bot";
     }
   };
+
+  const getParsedString = (message) => {
+    console.log(message);
+    const seperattedNewLineString = message.split("\n");
+
+    return (
+      <>
+        {seperattedNewLineString.map((words, index) => {
+          if (index == 0) {
+            return words;
+          } else {
+            return (
+              <>
+                <br />
+                {words}
+              </>
+            );
+          }
+        })}
+      </>
+    );
+  };
   return (
     <>
       <div className={`msg d-flex ${getMessageClassName()}`}>
         <div className={`msg-content-box m-1 ${getMessageBoxClassName()}`}>
-          <p className="msg-content">{message.content}</p>
+          <p className="msg-content">{getParsedString(message.content)}</p>
         </div>
       </div>
       <style>

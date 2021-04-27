@@ -25,10 +25,10 @@ const ChatInput = (props) => {
       axios
         .post("http://localhost:5000/bot", requestBody)
         .then((res) => {
-          console.log(res.data.reply);
+          console.log(res.data.message);
           const reply = {
             sender: "bot",
-            content: res.data.reply,
+            content: res.data.message,
           };
 
           newMessages = [...newMessages, reply];
