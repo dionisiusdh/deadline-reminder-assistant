@@ -2,7 +2,7 @@
 Modul Utama Parser
 @params x : string message dari pengguna
 """
-import re
+from random import randrange
 from datetime import datetime, timedelta
 
 from algorithm import *
@@ -20,6 +20,7 @@ def case_show_all_task(x):
     x = x.lower()                                   # lower case x agar seragam
     
     res = {
+        "type":"show",
         "showType":"all", 
         "taskType":"all",
         "startDate":"",
@@ -70,11 +71,31 @@ def case_show_all_task(x):
 
     return False
 
+def case_error():
+    """
+    Generate random error message
+    """
+    res = {"type":"error", "message":""}
+    
+    error_messages = [
+        "Pesan tidak dimengerti",
+        "Maaf aku gak ngerti maksud kamu",
+        "Aku gak ngerti :(",
+        "Aku gangerti, mungkin kamu butuh bantuan dengan 'help'",
+        "Hmm... pesan kamu tidak aku mengerti"
+    ]
+    random = randrange(0, len(error_messages)-1)
+    res["message"] = error_messages[random]
+    
+    return res
+
 tests = ["Apa aj deadline yang dimiliki sejauh ini?", "Buat beberapa hari ke depan ada kuis apa aja?",
          "Deadline tugas IF2211 itu kapan?", "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
          "2 Minggu ke dpan ada praktikum apa aj?", "Tugas buat 2 hari kedepan", "Hri ini ada tubes apa aja?"]
 
 for test in tests:
-    res = case_show_all_task(test)
-    print(f"{test} : {res}")
-
+    if (case_show_all_task(test)):
+        res = case_show_all_task(test)
+        print(f"{test} : {res}")
+    else:
+        print(case_error())
