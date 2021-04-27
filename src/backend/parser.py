@@ -9,6 +9,7 @@ from algorithm import *
 from regex import *
 from date import *
 
+# ===== KEYWORDS =====
 keywords_task = ["Kuis", "Ujian", "Tucil", "Tubes", "Praktikum"]
 
 def case_show_all_task(x):
@@ -49,7 +50,7 @@ def case_show_all_task(x):
             res["showType"] = "custom"
             res["startDate"] = date[0]
             res["endDate"] = date[1]
-        elif (isPatternExistKMP(keywords_B, x)):
+        elif (isPatternExistKMP(keywords_B, x) and len(get_number(x)) != 0):
             # kasus B : N Minggu ke depan
             nweek = int(get_number(x)[0])
             res["showType"] = "week"
@@ -71,31 +72,80 @@ def case_show_all_task(x):
 
     return False
 
+def case_update_task(x):
+    x = x.lower()                                   # lower case x agar seragam
+    
+    res = {
+        "type":"update",
+        "taskId":"",
+        "tanggal":""
+    }                                               # default type (all task)
+
+    # taskId db panjang
+    taskId = "DUMMY"
+    changeDate = get_date(x)
+
+    # Keywords
+    main_keywords_1 = ["undur", "mundur", "maju", "mju", "ganti", "gnti"]
+    main_keywords_2 = [
+        "deadline", "tenggat", "tanggal", "kumpul", "ngumpul", 
+        "tugas", "tgas", "tgs", "kuis", "ujian", "tucil", 
+        "tubes", "praktikum"
+    ]
+
+    if (isPatternExistKMP(main_keywords_1, x, False) and isPatternExistKMP(main_keywords_2, x, False) and len(changeDate) != 0):
+        res["taskId"] = taskId
+        res["tanggal"] = changeDate[0]
+        return res
+
+    return False
+
 def case_error():
     """
     Generate random error message
     """
-    res = {"type":"error", "message":""}
+    res = {
+        "type":"error", "message":""
+    }
     
     error_messages = [
         "Pesan tidak dimengerti",
         "Maaf aku gak ngerti maksud kamu",
-        "Aku gak ngerti :(",
+        "Aku nggak ngerti :(",
         "Aku gangerti, mungkin kamu butuh bantuan dengan 'help'",
         "Hmm... pesan kamu tidak aku mengerti"
     ]
+
     random = randrange(0, len(error_messages)-1)
     res["message"] = error_messages[random]
     
     return res
 
-tests = ["Apa aj deadline yang dimiliki sejauh ini?", "Buat beberapa hari ke depan ada kuis apa aja?",
-         "Deadline tugas IF2211 itu kapan?", "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
-         "2 Minggu ke dpan ada praktikum apa aj?", "Tugas buat 2 hari kedepan", "Hri ini ada tubes apa aja?"]
-
-for test in tests:
+def parse(x):
+    """
+    Main parse
+    """
     if (case_show_all_task(test)):
         res = case_show_all_task(test)
-        print(f"{test} : {res}")
+    elif (case_update_task(test)):
+        res = case_update_task(test)
     else:
-        print(case_error())
+        res = case_error()
+    
+    print(f"{test} : {res}")
+    return res
+
+tests = [
+    "Apa aj deadline yang dimiliki sejauh ini?", 
+    "Buat beberapa hari ke depan ada kuis apa aja?",
+    "Deadline tugas IF2211 itu kapan?", 
+    "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
+    "2 Minggu ke dpan ada praktikum apa aj?", 
+    "Tugas buat 2 hari kedepan", 
+    "Hri ini ada tubes apa aja?",
+    "Deadline tugas ID 2 diganti ke 28/04/2021", 
+    "Tugas 3 dimajuin ke 28-04-2021"
+]
+
+for test in tests:
+    parse(test)
