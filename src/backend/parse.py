@@ -33,7 +33,7 @@ def case_add_task(x):
     }
 
     # Keywords
-    preposition_keywords = ["pada", "ketika"]
+    preposition_keywords = ["pada", "ketika", "@"]
 
     listTanggal = get_date(x)
     listMatkul = get_matkul(x)
@@ -41,7 +41,7 @@ def case_add_task(x):
     # Masih asumsi hanya ada satu preposisi
     listPreposition = get_all_same_pattern(preposition_keywords, x)
 
-    if (len(listTanggal) == 1 and len(listMatkul) == 1 and len(listJenis) == 1 and len(listPreposition) == 1):
+    if (len(listTanggal) == 1 and len(listMatkul) == 1 and len(listJenis) == 1 and len(listPreposition) > 0):
 
         res["tanggal"] = listTanggal[0].strip(" ")
         res["kodeMatkul"] = listMatkul[0].strip(" ")
@@ -50,8 +50,22 @@ def case_add_task(x):
         # Get Index Of Important Keywords
         # Asumsikan bahwa topik selalu diapit oleh <Kode Kuliah> dan <preposition_keywords>
         startIndex = int(KMP(res["kodeMatkul"], x, False)[0]) + 6
-        wordFound = False
-        endIndex = int(KMP(listPreposition[0], x, False)[0])
+        endIndex = -1
+        increment = 0
+        
+        endIndexFound = False
+
+        for preposition in listPreposition:
+            for index in KMP(preposition, x, False):
+                if(index > startIndex):
+                    endIndex = index
+                    endIndexFound = True
+                    break
+            if(endIndexFound):
+                break
+
+        if(endIndex == -1):
+            return False
 
         res["topik"] = x[startIndex:endIndex].strip(" ")
 
@@ -74,8 +88,8 @@ def case_mark_task_done(x):
         "taskId": "",
     }
 
-    # taskId db panjang
-    taskId = "DUMMY"
+    # TaskId db panjang. Asumsi hanya ada satu id pada input
+    listTaskId = get_number(x)
 
     done_keywords = ["udah", "sudah", "udh", "selesai", "usai",
                      "tuntas", "tamat", "kelar", "klr", "lewat", "sls"]
@@ -83,11 +97,34 @@ def case_mark_task_done(x):
     listDone = get_all_same_pattern(done_keywords, x)
     listTask = get_all_same_pattern(keywords_task, x)
 
-    if (len(listDone) > 0 and len(listTask) > 0):
-        res["taskId"] = taskId
+    if (len(listDone) > 0 and len(listTask) == 1 and len(listTaskId) > 0):
+        taskIdFound = False
+        realTaskIndex = ""
+        realTaskId = ""
+        typeIndex = int(KMP(listTask[0], x, False)[0])
+
+        listIndex = []
+
+        for taskId in listTaskId:
+            for index in KMP(taskId, x, False):
+                listIndex.append(index)
+            
+        listIndex.sort()
+
+        for index in listIndex:
+            if(index > typeIndex):
+                realTaskIndex = index
+                break
+        
+        for taskId in listTaskId:
+            for index in KMP(taskId, x, False):
+                if (index == realTaskIndex):
+                    realTaskId = taskId
+                    break
+
+        res["taskId"] = realTaskId
         return res
     return False
-
 
 def case_show_all_task(x):
     """
@@ -334,20 +371,20 @@ def parse(x):
     """
     Main parse
     """
-    if (case_show_all_task(x)):
-        res = case_show_all_task(x)
-    elif (case_update_task(x)):
-        res = case_update_task(x)
-    elif (case_get_deadline_task(x)):
-        res = case_get_deadline_task(x)
-    elif (case_help(x)):
-        res = case_help(x)
-    elif (case_other(x)):
-        res = case_other(x)
+    if (case_mark_task_done(x)):
+        res = case_mark_task_done(x)
+    # elif (case_update_task(x)):
+    #     res = case_update_task(x)
+    # elif (case_get_deadline_task(x)):
+    #     res = case_get_deadline_task(x)
+    # elif (case_help(x)):
+    #     res = case_help(x)
+    # elif (case_other(x)):
+    #     res = case_other(x)
     else:
         res = case_error()
 
-    # print(f"{test} : {res}")
+    print(f"{test} : {res}")
     return res
 
 # tests=[
@@ -385,10 +422,10 @@ tests = [
     # "2 Minggu ke dpan ada praktikum apa aj?",
     # "Tugas buat 2 hari kedepan",
     # "Hri ini ada tubes apa aja?",
-    "Deadline tugas ID 4 diganti ke 29/06/2022",
+    # "Deadline tugas ID 4 diganti ke 29/06/2022",
     # "Tugas 3 dimajuin ke 28-04-2021",
-    # "Tubes IF2211 String Matching pada 14/04/2021",
-    # "Tubes IF2211 String Matching dah kelar"
+    # "Pada pada ketika Tubes pada ketika IF2211 String Matching pada ketika 14/04/2021",
+    "300 Tubes 254 300 245 346 String Matching 300 dah kelar",
 ]
 
 
