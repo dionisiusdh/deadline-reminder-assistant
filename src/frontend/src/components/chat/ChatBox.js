@@ -23,9 +23,6 @@ const ChatBox = () => {
   };
   return (
     <>
-      <div>
-        <h5>ChatBox</h5>
-      </div>
       <div className="chat-box d-flex flex-column justify-content-between align-items-center">
         <ChatWindow messages={messages} messageEndRef={messageEndRef} />
 
@@ -34,11 +31,10 @@ const ChatBox = () => {
       <style>
         {`
             .chat-box {
-                background: #191919;
+                background-color: rgb(40, 37, 53);
                 width: 60%;
-                height: 75vh;
-                max-height: 75vh;
-                
+                height: 80vh;
+                max-height: 80vh;
             }
           `}
       </style>
