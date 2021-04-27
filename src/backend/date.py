@@ -1,10 +1,14 @@
 from datetime import datetime
 
+
 def date_to_str(date):
     """
     Mereturn string berformat DD/MM/YYYY dari sebuah datetime
     """
+    if (date.month < 10):
+        return f"{date.day}/0{date.month}/{date.year}"
     return f"{date.day}/{date.month}/{date.year}"
+
 
 def str_to_date(x):
     """
