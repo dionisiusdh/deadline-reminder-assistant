@@ -95,15 +95,9 @@ def case_show_all_task(x):
     Menampilkan seluruh task
     return : boolean
     """
-    x = x.lower()                                   # lower case x agar seragam
+    x = x.lower()           # lower case x agar seragam
 
-    res = {
-        "type": "show",
-        "showType": "all",
-        "taskType": "all",
-        "startDate": "",
-        "endDate": ""
-    }                                               # default type (all task)
+    res = {"message": ""}   # result
 
     # Proses taskType, bisa berupa kuis, tubes, dll atau all
     task_type = get_all_same_pattern(keywords_task, x)
@@ -116,7 +110,9 @@ def case_show_all_task(x):
     main_keywords_2 = ["deadline", "tugas", "dilakukan", "ada"]
 
     if (isPatternExistKMP(main_keywords_1, x, False) and isPatternExistKMP(main_keywords_2, x, False)):
-        today = datetime.now()
+        today = datetime.now().date()
+        allTask = firestoreQueryResultsToDictArray(
+            db.collection(TASK_FIRESTORE_COLLECTIONS).stream())     # get all task
 
         # kasus A : Periode tanggal, ambil tanggal jika ada
         date = get_date(x)
@@ -129,26 +125,48 @@ def case_show_all_task(x):
 
         if (len(date) == 2):
             # kasus A: period
-            res["showType"] = "custom"
-            res["startDate"] = date[0]
-            res["endDate"] = date[1]
+            for i in range(len(allTask)):
+                tanggal = allTask[i]["tanggal"]
+                if (str_to_date(date[0]) <= str_to_date(tanggal) <= str_to_date(date[1])):
+                    matkul = allTask[i]["mataKuliah"]
+                    topik = allTask[i]["topik"].capitalize()
+                    jenis = allTask[i]["jenis"].capitalize()
+                    res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
         elif (isPatternExistKMP(keywords_B, x) and len(get_number(x)) != 0):
             # kasus B : N Minggu ke depan
-            nweek = int(get_number(x)[0])
-            res["showType"] = "week"
-            res["startDate"] = date_to_str(today)
-            res["endDate"] = date_to_str(today + timedelta(days=nweek*7))
+            for i in range(len(allTask)):
+                tanggal = allTask[i]["tanggal"]
+                if (today <= str_to_date(tanggal) <= today + timedelta(days=int(get_number(x)[0])*7)):
+                    matkul = allTask[i]["mataKuliah"]
+                    topik = allTask[i]["topik"].capitalize()
+                    jenis = allTask[i]["jenis"].capitalize()
+                    res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
         elif (isPatternExistKMP(keywords_C, x) and len(get_number(x)) != 0):
             # kasus C : N Hari ke depan
-            nday = int(get_number(x)[0])
-            res["showType"] = "day"
-            res["startDate"] = date_to_str(today)
-            res["endDate"] = date_to_str(today + timedelta(days=nday))
+            for i in range(len(allTask)):
+                tanggal = allTask[i]["tanggal"]
+                if (today <= str_to_date(tanggal) <= today + timedelta(days=int(get_number(x)[0]))):
+                    matkul = allTask[i]["mataKuliah"]
+                    topik = allTask[i]["topik"].capitalize()
+                    jenis = allTask[i]["jenis"].capitalize()
+                    res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
         elif (isPatternExistKMP(keywords_D, x)):
             # kasus D : Hari ini
-            res["showType"] = "today"
-            res["startDate"] = date_to_str(today)
-            res["endDate"] = res["startDate"]
+            for i in range(len(allTask)):
+                tanggal = allTask[i]["tanggal"]
+                if (tanggal == date_to_str(today)):
+                    matkul = allTask[i]["mataKuliah"]
+                    topik = allTask[i]["topik"].capitalize()
+                    jenis = allTask[i]["jenis"].capitalize()
+                    res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
+        else:
+            # all
+            for i in range(len(allTask)):
+                tanggal = allTask[i]["tanggal"]
+                matkul = allTask[i]["mataKuliah"]
+                topik = allTask[i]["topik"].capitalize()
+                jenis = allTask[i]["jenis"].capitalize()
+                res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
 
         return res
 
@@ -158,14 +176,8 @@ def case_show_all_task(x):
 def case_update_task(x):
     x = x.lower()                                   # lower case x agar seragam
 
-    res = {
-        "type": "update",
-        "taskId": "",
-        "tanggal": ""
-    }                                               # default type (all task)
-
     # taskId db panjang
-    taskId = "DUMMY"
+    taskId = (get_number(x))[0]
     changeDate = get_date(x)
 
     # Keywords
@@ -177,10 +189,12 @@ def case_update_task(x):
     ]
 
     if (isPatternExistKMP(main_keywords_1, x, False) and isPatternExistKMP(main_keywords_2, x, False) and len(changeDate) != 0):
-        res["taskId"] = taskId
-        res["tanggal"] = changeDate[0]
-        return res
+        tasks = db.collection(TASK_FIRESTORE_COLLECTIONS).document(taskId)
+        update_data = {"tanggal": changeDate[0]}
+        tasks.update(update_data)
+        return {"message": f"Berhasil mengubah deadline task {taskId} menjadi {changeDate[0]}"}
 
+    # return {"message": f"Tidak dapat melakukan pengubahan deadline. Coba cek ID task kamu!"}
     return False
 
 
@@ -188,9 +202,6 @@ def case_error():
     """
     Generate random error message
     """
-    res = {
-        "type": "error", "message": ""
-    }
 
     error_messages = [
         "Pesan tidak dimengerti",
@@ -201,9 +212,8 @@ def case_error():
     ]
 
     random = randrange(0, len(error_messages)-1)
-    res["message"] = error_messages[random]
 
-    return res
+    return {"message": error_messages[random]}
 
 
 def case_help(x):
@@ -330,17 +340,18 @@ def parse(x):
 
 
 tests = [
-    "Apa aj deadline yang dimiliki sejauh ini?",
-    "Buat beberapa hari ke depan ada kuis apa aja?",
-    "Deadline tugas IF2211 itu kapan?",
-    "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
-    "2 Minggu ke dpan ada praktikum apa aj?",
-    "Tugas buat 2 hari kedepan",
-    "Hri ini ada tubes apa aja?",
-    "Deadline tugas ID 2 diganti ke 28/04/2021",
-    "Tugas 3 dimajuin ke 28-04-2021",
-    "Tubes IF2211 String Matching pada 14/04/2021",
-    "Tubes IF2211 String Matching dah kelar"
+    # "Apa aj deadline yang dimiliki sejauh ini?",
+    # "Hri ini ada apa aja",
+    # "Buat beberapa hari ke depan ada kuis apa aja?",
+    # "Deadline tugas IF2211 itu kapan?",
+    # "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
+    # "2 Minggu ke dpan ada praktikum apa aj?",
+    # "Tugas buat 2 hari kedepan",
+    # "Hri ini ada tubes apa aja?",
+    "Deadline tugas ID 4 diganti ke 29/06/2022",
+    # "Tugas 3 dimajuin ke 28-04-2021",
+    # "Tubes IF2211 String Matching pada 14/04/2021",
+    # "Tubes IF2211 String Matching dah kelar"
 ]
 
 

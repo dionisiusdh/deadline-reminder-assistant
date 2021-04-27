@@ -21,15 +21,20 @@ const ChatWindow = (props) => {
             .chat-window {
                 overflow-y: auto;
                 width: 100%;
-                
+                padding: 15px;
             }
 
             ::-webkit-scrollbar {
-                width: .5rem;
-              }
+              width: .3rem;
+            }
+            
+            ::-webkit-scrollbar-track {
+              background: #1e1e24;
+            }
+            
             ::-webkit-scrollbar-thumb {
-            background-color: #777777;
-            border-radius: 2px;
+              background: #6649b8;
+              border-radius: 2px;
             }
             
         `}
