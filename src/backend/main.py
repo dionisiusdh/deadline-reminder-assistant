@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from firebase import db
 from constants import TASK_FIRESTORE_COLLECTIONS
-from utils import firestoreQueryResultsToDictArray
+from utils import firestoreQueryResultsToDictArray, getNewId
 from parser import parse
 
 
@@ -59,7 +59,7 @@ def addTask():
         mataKuliah = requestBody["mataKuliah"]
         jenis = requestBody["jenis"]
         topik = requestBody["topik"]
-        taskId = str(uuid.uuid4())
+        taskId = getNewId(TASK_FIRESTORE_COLLECTIONS)
 
         taskData = {
             "taskId": taskId,

@@ -4,10 +4,12 @@ Modul Utama Parser
 """
 from random import randrange
 from datetime import datetime, timedelta
-
+from firebase import db
+from constants import *
 from algorithm import *
 from regex import *
 from date import *
+from utils import *
 
 # ===== KEYWORDS =====
 keywords_task = ["Kuis", "Ujian", "Tucil", "Tubes", "Praktikum"]
@@ -157,6 +159,60 @@ def case_help(x):
         return False
 
 
+def case_get_deadline_task(x):
+
+    isTucilExist = isPatternExistKMP(["tucil"], x, False)
+    isTubesExist = isPatternExistKMP(["tubes"], x, False)
+    isTugasExist = isTucilExist or isTubesExist
+
+    main_keywords_1 = ["deadline", "tenggat"]
+    main_keywords_2 = ["kapan"]
+    isMainKeyWordsExist = isPatternExistKMP(
+        main_keywords_1, x, False) and isPatternExistKMP(main_keywords_2, x, False)
+
+    matkulNames = get_matkul(x)
+    isMatkulExist = len(matkulNames) > 0
+
+    print(isMainKeyWordsExist)
+    print(isTugasExist)
+    print(isMatkulExist)
+    print(matkulNames)
+    print(x[:len(x)-1])
+
+    if isMainKeyWordsExist and isTugasExist and isMatkulExist:
+
+        # prepare tugas keywords for query
+        tugasKeywords = []
+        if (isTucilExist):
+            tugasKeywords.append("tucil")
+        if (isTubesExist):
+            tugasKeywords.append("tubes")
+
+        # get the data with the same matkul name and the same jenis
+        tasksResult = db.collection(TASK_FIRESTORE_COLLECTIONS).where(
+            "mataKuliah", "in", matkulNames).where("jenis", "in", tugasKeywords)
+
+        tasks = firestoreQueryResultsToDictArray(tasksResult.stream())
+
+        if (len(tasks) == 0):
+            return {"message": f"Tidak ditemukan deadline untuk "}
+        else:
+            messageResponse = ""
+
+            for i in range(len(tasks)):
+
+                if (i != 0):
+                    messageResponse += "\n"
+
+                tasks = tasks[i]
+                messageResponse += f'{i + 1}. {task["mataKuliah"]}-{task["topik"]} : {task["tanggal"]}'
+
+            return {"message": messageResponse}
+
+    else:
+        return False
+
+
 def parse(x):
     """
     Main parse
@@ -165,6 +221,8 @@ def parse(x):
         res = case_show_all_task(x)
     elif (case_update_task(x)):
         res = case_update_task(x)
+    elif (case_get_deadline_task(x)):
+        res = case_get_deadline_task(x)
     elif (case_help(x)):
         res = case_help(x)
     else:
