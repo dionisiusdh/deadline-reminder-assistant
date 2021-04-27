@@ -224,38 +224,40 @@ def case_get_deadline_task(x):
     print(matkulNames)
     print(x[:len(x)-1])
 
-    if isMainKeyWordsExist and isTugasExist and isMatkulExist:
+    # if isMainKeyWordsExist and isTugasExist and isMatkulExist:
+    #     # get the data with the same matkul name and the same jenis
+    #     tasks = []
 
-        # prepare tugas keywords for query
-        tugasKeywords = []
-        if (isTucilExist):
-            tugasKeywords.append("tucil")
-        if (isTubesExist):
-            tugasKeywords.append("tubes")
+    #     # since we are only able
+    #     for matkul in matkulNames:
+    #         tasksResult = db.collection(TASK_FIRESTORE_COLLECTIONS).where("mataKuliah", "in", matkulNames)
 
-        # get the data with the same matkul name and the same jenis
-        tasksResult = db.collection(TASK_FIRESTORE_COLLECTIONS).where(
-            "mataKuliah", "in", matkulNames).where("jenis", "in", tugasKeywords)
+    #         if (isTucilExist):
+    #             tugasKeywords.append("tucil")
+    #         if (isTubesExist):
+    #             tugasKeywords.append("tubes")
 
-        tasks = firestoreQueryResultsToDictArray(tasksResult.stream())
+    #     .where("jenis", "in", tugasKeywords)
 
-        if (len(tasks) == 0):
-            return {"message": f"Tidak ditemukan deadline untuk "}
-        else:
-            messageResponse = ""
+    #     tasks = firestoreQueryResultsToDictArray(tasksResult.stream())
 
-            for i in range(len(tasks)):
+    #     if (len(tasks) == 0):
+    #         return {"message": f"Tidak ditemukan deadline untuk "}
+    #     else:
+    #         messageResponse = ""
 
-                if (i != 0):
-                    messageResponse += "\n"
+    #         for i in range(len(tasks)):
 
-                tasks = tasks[i]
-                messageResponse += f'{i + 1}. {task["mataKuliah"]}-{task["topik"]} : {task["tanggal"]}'
+    #             if (i != 0):
+    #                 messageResponse += "\n"
 
-            return {"message": messageResponse}
+    #             tasks = tasks[i]
+    #             messageResponse += f'{i + 1}. {task["mataKuliah"]}-{task["topik"]} : {task["tanggal"]}'
 
-    else:
-        return False
+    #         return {"message": messageResponse}
+
+    # else:
+    #     return False
 
 
 def parse(x):
