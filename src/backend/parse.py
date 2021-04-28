@@ -152,13 +152,14 @@ def case_mark_task_done(x):
         
         # Handle kondisi ketika ditemukan id maupun tidak ditemukan
         if(idFound):
+            res["message"] = f"Berhasil menandai task {realTaskId} menjadi selesai"
             tasks = db.collection(TASK_FIRESTORE_COLLECTIONS).document(realTaskId)
             tasks.delete()
-            res["message"] = f"Berhasil menandai task {realTaskId} menjadi selesai"
+            return res
         else:
             res["message"] = "Task dengan Id tersebut tidak dapat ditemukan"
+            return res
 
-        return res
     return False
 
 
@@ -408,6 +409,7 @@ def parse(x):
     Main parse
     """
     res_add = case_add_task(x)
+    res_task_done = case_mark_task_done(x)
     if (case_show_all_task(x)):
         res = case_show_all_task(x)
     elif (res_add != False):
@@ -416,8 +418,8 @@ def parse(x):
         res = case_update_task(x)
     elif (case_get_deadline_task(x)):
         res = case_get_deadline_task(x)
-    elif (case_mark_task_done(x)):
-        res = case_mark_task_done(x)
+    elif (res_task_done != False):
+        res = res_task_done
     elif (case_help(x)):
         res = case_help(x)
     elif (case_other(x)):
@@ -427,24 +429,24 @@ def parse(x):
 
     return res
 
-tests = [
-    # "Apa aj deadline yang dimiliki sejauh ini?",
-    # "Hri ini ada apa aja",
-    # "Buat beberapa hari ke depan ada kuis apa aja?",
-    # "Deadline tugas IF2211 itu kapan?",
-    # "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
-    # "2 Minggu ke dpan ada praktikum apa aj?",
-    # "Tugas buat 2 hari kedepan",
-    # "Hri ini ada tubes apa aja?",
-    # "Deadline tugas ID 4 diganti ke 29/06/2022",
-    # "Tugas 3 dimajuin ke 28-04-2021",
-    # "Pada pada ketika Tubes pada ketika IF2211 String Matching pada ketika 14/04/2021",
-    "300 Tubes 5 300 245 346 String Matching 300 dah kelar",
-]
+# tests = [
+#     # "Apa aj deadline yang dimiliki sejauh ini?",
+#     # "Hri ini ada apa aja",
+#     # "Buat beberapa hari ke depan ada kuis apa aja?",
+#     # "Deadline tugas IF2211 itu kapan?",
+#     # "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
+#     # "2 Minggu ke dpan ada praktikum apa aj?",
+#     # "Tugas buat 2 hari kedepan",
+#     # "Hri ini ada tubes apa aja?",
+#     # "Deadline tugas ID 4 diganti ke 29/06/2022",
+#     # "Tugas 3 dimajuin ke 28-04-2021",
+#     # "Pada pada ketika Tubes pada ketika IF2211 String Matching pada ketika 14/04/2021",
+#     "300 Tubes 5 300 245 346 String Matching 300 dah kelar",
+# ]
 
 
-for test in tests:
-   parse(test)
+# for test in tests:
+#    parse(test)
 
 
 # testsHelp = [
