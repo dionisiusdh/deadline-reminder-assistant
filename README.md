@@ -2,9 +2,10 @@
 
 > Personal Deadline Reminder Assistant
 
+[**Live Demo**](ghembot.netlify.app)
+
 ![](./demo.gif)
 
-[**Live Demo**](ghembot.netlify.app)
 
 | Anggota                 | NIM      |
 | ----------------------- | -------- |
