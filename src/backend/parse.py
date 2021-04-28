@@ -12,8 +12,11 @@ from date import *
 from utils import *
 
 # ===== KEYWORDS =====
-keywords_task = ["Kuis", "Ujian", "Tucil", "Task",
-                 "Tubes", "Praktikum", "Tugas", "PR", "Ulangan"]
+keywords_task = ["Kuis", "Ujian", "Tucil", "Tubes",
+                 "Praktikum", "Tugas", "PR", "Ulangan"]
+
+# Debug mode
+DEBUG = False
 
 
 def case_add_task(x):
@@ -33,6 +36,7 @@ def case_add_task(x):
     }
 
     # Keywords
+    main_keywords_1 = ["tambahkan", "tambah", "add", "tmbah", "ada", "baru"]
     preposition_keywords = ["pada", "ketika", "@"]
 
     listTanggal = get_date(x)
@@ -40,8 +44,9 @@ def case_add_task(x):
     listJenis = get_all_same_pattern(keywords_task, x)
     # Masih asumsi hanya ada satu preposisi
     listPreposition = get_all_same_pattern(preposition_keywords, x)
+    listMain = get_all_same_pattern(main_keywords_1, x)
 
-    if (len(listTanggal) == 1 and len(listMatkul) == 1 and len(listJenis) == 1 and len(listPreposition) > 0):
+    if (len(listTanggal) == 1 and len(listMatkul) == 1 and len(listJenis) == 1 and len(listPreposition) > 0 and len(listMain) > 0):
 
         res["tanggal"] = listTanggal[0].strip(" ")
         res["kodeMatkul"] = listMatkul[0].strip(" ").upper()
@@ -52,7 +57,7 @@ def case_add_task(x):
         startIndex = int(KMP(res["kodeMatkul"], x, False)[0]) + 6
         endIndex = -1
         increment = 0
-        
+
         endIndexFound = False
 
         for preposition in listPreposition:
@@ -86,12 +91,14 @@ def case_add_task(x):
         res["message"] = "[TASK BERHASIL DICATAT]\n"
         res["message"] += f"(ID: {taskId}) {res['tanggal']} - {res['kodeMatkul']} - {res['jenis']} - {res['topik']}"
 
+        res = res["message"]
+
         return res
 
     return False
 
 
-def case_mark_task_done(x):
+def case_mark_task_done(x, allTask):
     """
     Mereturn true jika string x merupakan command untuk
     Menandai sebuah task done
@@ -99,10 +106,10 @@ def case_mark_task_done(x):
     """
 
     # lower case x agar seragam
-    x = x.lower()                                   
+    x = x.lower()
 
     res = {
-        "message":""
+        "message": ""
     }
 
     # TaskId db panjang. Asumsi posisi id Task: <keywords_task> <taskId>
@@ -125,23 +132,19 @@ def case_mark_task_done(x):
         for taskId in listTaskId:
             for index in KMP(taskId, x, False):
                 listIndex.append(index)
-            
+
         listIndex.sort()
 
         for index in listIndex:
             if(index > typeIndex):
                 realTaskIndex = index
                 break
-        
+
         for taskId in listTaskId:
             for index in KMP(taskId, x, False):
                 if (index == realTaskIndex):
                     realTaskId = taskId
                     break
-
-        # Get all task
-        allTask = firestoreQueryResultsToDictArray(
-            db.collection(TASK_FIRESTORE_COLLECTIONS).stream())     
 
         # Mencari apakah task dengan Id yang diinput tersedia
         idFound = False
@@ -149,11 +152,12 @@ def case_mark_task_done(x):
             if(task['taskId'] == realTaskId):
                 idFound = True
                 break
-        
+
         # Handle kondisi ketika ditemukan id maupun tidak ditemukan
         if(idFound):
             res["message"] = f"Berhasil menandai task {realTaskId} menjadi selesai"
-            tasks = db.collection(TASK_FIRESTORE_COLLECTIONS).document(realTaskId)
+            tasks = db.collection(
+                TASK_FIRESTORE_COLLECTIONS).document(realTaskId)
             tasks.delete()
             return res
         else:
@@ -163,7 +167,7 @@ def case_mark_task_done(x):
     return False
 
 
-def case_show_all_task(x):
+def case_show_all_task(x, allTask):
     """
     Mereturn true jika string x merupakan command untuk
     Menampilkan seluruh task
@@ -176,18 +180,18 @@ def case_show_all_task(x):
     # Proses taskType, bisa berupa kuis, tubes, dll atau all
     task_type = get_all_same_pattern(keywords_task, x)
     if (len(task_type) != 0):
-        res["taskType"] = task_type[0]
+        task_type = task_type[0]
+    else:
+        task_type = "tugas"
 
     # Keywords
     main_keywords_1 = ["lihat", "liat", "apa saja",
                        "apa aja", "apa aj", "apa sj",
-                       "buat", "daftar", "list"]
-    main_keywords_2 = ["deadline", "tugas", "dilakukan", "ada"]
+                       "apa", "buat", "daftar", "list"]
+    main_keywords_2 = ["deadline", "tugas", "task", "dilakukan", "ada"]
 
-    if (isPatternExistKMP(main_keywords_1, x, False) and isPatternExistKMP(main_keywords_2, x, False)):
+    if (isPatternExistKMP(main_keywords_1, x, False) and (isPatternExistKMP(main_keywords_2, x, False) or task_type != "tugas")):
         today = datetime.now().date()
-        allTask = firestoreQueryResultsToDictArray(
-            db.collection(TASK_FIRESTORE_COLLECTIONS).stream())     # get all task
 
         # kasus A : Periode tanggal, ambil tanggal jika ada
         date = get_date(x)
@@ -195,60 +199,69 @@ def case_show_all_task(x):
         keywords_B = ["minggu", "mnggu", "mng"]
         # kasus C : N Hari ke depan
         keywords_C = ["hari", "hri", "hr"]
+        # kasus D : Hari ini
         keywords_D = ["hari ini", "hri ini", "hr ini",
-                      "sekarang", "skrng"]     # kasus D : Hari ini
+                      "sekarang", "skrng"]
 
         if (len(date) == 2):
             # kasus A: period
             for i in range(len(allTask)):
-                tanggal = allTask[i]["tanggal"]
-                if (str_to_date(date[0]) <= str_to_date(tanggal) <= str_to_date(date[1])):
-                    matkul = allTask[i]["mataKuliah"]
-                    topik = allTask[i]["topik"].capitalize()
-                    jenis = allTask[i]["jenis"].capitalize()
-                    res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
+                if (task_type.lower() == "tugas" or (task_type.lower() == allTask[i]["jenis"].lower())):
+                    tanggal = allTask[i]["tanggal"]
+                    if (str_to_date(date[0]) <= str_to_date(tanggal) <= str_to_date(date[1])):
+                        matkul = allTask[i]["mataKuliah"]
+                        topik = allTask[i]["topik"].capitalize()
+                        jenis = allTask[i]["jenis"].capitalize()
+                        res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
         elif (isPatternExistKMP(keywords_B, x) and len(get_number(x)) != 0):
             # kasus B : N Minggu ke depan
             for i in range(len(allTask)):
-                tanggal = allTask[i]["tanggal"]
-                if (today <= str_to_date(tanggal) <= today + timedelta(days=int(get_number(x)[0])*7)):
-                    matkul = allTask[i]["mataKuliah"]
-                    topik = allTask[i]["topik"].capitalize()
-                    jenis = allTask[i]["jenis"].capitalize()
-                    res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
+                if (task_type.lower() == "tugas" or (task_type.lower() == allTask[i]["jenis"].lower())):
+                    tanggal = allTask[i]["tanggal"]
+                    if (today <= str_to_date(tanggal) <= today + timedelta(days=int(get_number(x)[0])*7)):
+                        matkul = allTask[i]["mataKuliah"]
+                        topik = allTask[i]["topik"].capitalize()
+                        jenis = allTask[i]["jenis"].capitalize()
+                        res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
         elif (isPatternExistKMP(keywords_C, x) and len(get_number(x)) != 0):
             # kasus C : N Hari ke depan
             for i in range(len(allTask)):
-                tanggal = allTask[i]["tanggal"]
-                if (today <= str_to_date(tanggal) <= today + timedelta(days=int(get_number(x)[0]))):
-                    matkul = allTask[i]["mataKuliah"]
-                    topik = allTask[i]["topik"].capitalize()
-                    jenis = allTask[i]["jenis"].capitalize()
-                    res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
+                if (task_type.lower() == "tugas" or (task_type.lower() == allTask[i]["jenis"].lower())):
+                    tanggal = allTask[i]["tanggal"]
+                    if (today <= str_to_date(tanggal) <= today + timedelta(days=int(get_number(x)[0]))):
+                        matkul = allTask[i]["mataKuliah"]
+                        topik = allTask[i]["topik"].capitalize()
+                        jenis = allTask[i]["jenis"].capitalize()
+                        res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
         elif (isPatternExistKMP(keywords_D, x)):
             # kasus D : Hari ini
             for i in range(len(allTask)):
-                tanggal = allTask[i]["tanggal"]
-                if (tanggal == date_to_str(today)):
+                if (task_type.lower() == "tugas" or (task_type.lower() == allTask[i]["jenis"].lower())):
+                    tanggal = allTask[i]["tanggal"]
+                    if (tanggal == date_to_str(today)):
+                        matkul = allTask[i]["mataKuliah"]
+                        topik = allTask[i]["topik"].capitalize()
+                        jenis = allTask[i]["jenis"].capitalize()
+                        res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
+        else:
+            # all
+            for i in range(len(allTask)):
+                if (task_type.lower() == "tugas" or (task_type.lower() == allTask[i]["jenis"].lower())):
+                    tanggal = allTask[i]["tanggal"]
                     matkul = allTask[i]["mataKuliah"]
                     topik = allTask[i]["topik"].capitalize()
                     jenis = allTask[i]["jenis"].capitalize()
                     res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
-        else:
-            # all
-            for i in range(len(allTask)):
-                tanggal = allTask[i]["tanggal"]
-                matkul = allTask[i]["mataKuliah"]
-                topik = allTask[i]["topik"].capitalize()
-                jenis = allTask[i]["jenis"].capitalize()
-                res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
+
+        if (res["message"] == ""):
+            return {"message": "Kamu tidak punya tugas terkait dijangka waktu ini"}
 
         return res
 
     return False
 
 
-def case_update_task(x):
+def case_update_task(x, allTask):
     x = x.lower()                                   # lower case x agar seragam
 
     # taskId db panjang
@@ -260,16 +273,21 @@ def case_update_task(x):
     main_keywords_2 = [
         "deadline", "tenggat", "tanggal", "kumpul", "ngumpul",
         "tugas", "tgas", "tgs", "kuis", "ujian", "tucil",
-        "tubes", "praktikum"
+        "tubes", "praktikum", "pr", "task"
     ]
 
-    if (isPatternExistKMP(main_keywords_1, x, False) and isPatternExistKMP(main_keywords_2, x, False) and len(changeDate) != 0 and len(taskId) != 0):
-        tasks = db.collection(TASK_FIRESTORE_COLLECTIONS).document(taskId[0])
-        update_data = {"tanggal": changeDate[0]}
-        tasks.update(update_data)
-        return {"message": f"Berhasil mengubah deadline task {taskId[0]} menjadi {changeDate[0]}"}
+    lenAllTask = len(allTask)
 
-    # return {"message": f"Tidak dapat melakukan pengubahan deadline. Coba cek ID task kamu!"}
+    if (isPatternExistKMP(main_keywords_1, x, False) and isPatternExistKMP(main_keywords_2, x, False) and len(changeDate) != 0 and len(taskId) != 0):
+        if (int(taskId[0]) > lenAllTask):
+            return {"message": f"Tidak dapat melakukan pengubahan deadline. Coba cek ID task kamu!"}
+        else:
+            tasks = db.collection(
+                TASK_FIRESTORE_COLLECTIONS).document(taskId[0])
+            update_data = {"tanggal": changeDate[0]}
+            # tasks.update(update_data)
+            return {"message": f"Berhasil mengubah deadline task {taskId[0]} menjadi {changeDate[0]}"}
+
     return False
 
 
@@ -408,45 +426,70 @@ def parse(x):
     """
     Main parse
     """
+    # Get all task
+    allTask = firestoreQueryResultsToDictArray(
+        db.collection(TASK_FIRESTORE_COLLECTIONS).stream())
+
+    res_show_all_task = case_show_all_task(x, allTask)
+    res_update_task = case_update_task(x, allTask)
+    res_deadline_task = case_get_deadline_task(x)
     res_add = case_add_task(x)
-    res_task_done = case_mark_task_done(x)
-    if (case_show_all_task(x)):
-        res = case_show_all_task(x)
-    elif (res_add != False):
-        res = res_add
-    elif (case_update_task(x)):
-        res = case_update_task(x)
-    elif (case_get_deadline_task(x)):
-        res = case_get_deadline_task(x)
-    elif (res_task_done != False):
-        res = res_task_done
-    elif (case_help(x)):
-        res = case_help(x)
-    elif (case_other(x)):
-        res = case_other(x)
+    res_task_done = case_mark_task_done(x, allTask)
+    res_help = case_help(x)
+    res_other = case_other(x)
+
+    if (res_show_all_task):
+        print(res_show_all_task) if DEBUG else ""
+        return res_show_all_task
+    elif (res_add):
+        print(res_add) if DEBUG else ""
+        return res_add
+    elif (res_update_task):
+        print(res_update_task) if DEBUG else ""
+        return res_update_task
+    elif (res_deadline_task):
+        print(res_deadline_task) if DEBUG else ""
+        return res_deadline_task
+    elif (res_task_done):
+        print(res_task_done) if DEBUG else ""
+        return res_task_done
+    elif (res_help):
+        print(res_help) if DEBUG else ""
+        return res_help
+    elif (res_other):
+        print(res_other) if DEBUG else ""
+        return res_other
     else:
-        res = case_error()
-
-    return res
-
-# tests = [
-#     # "Apa aj deadline yang dimiliki sejauh ini?",
-#     # "Hri ini ada apa aja",
-#     # "Buat beberapa hari ke depan ada kuis apa aja?",
-#     # "Deadline tugas IF2211 itu kapan?",
-#     # "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
-#     # "2 Minggu ke dpan ada praktikum apa aj?",
-#     # "Tugas buat 2 hari kedepan",
-#     # "Hri ini ada tubes apa aja?",
-#     # "Deadline tugas ID 4 diganti ke 29/06/2022",
-#     # "Tugas 3 dimajuin ke 28-04-2021",
-#     # "Pada pada ketika Tubes pada ketika IF2211 String Matching pada ketika 14/04/2021",
-#     "300 Tubes 5 300 245 346 String Matching 300 dah kelar",
-# ]
+        print(case_error()) if DEBUG else ""
+        return case_error()
 
 
-# for test in tests:
-#    parse(test)
+tests = [
+    "hari ni ada tugas apa aja",
+    "lihat Tugas 2 minggu kedepan",
+    "lihat tucil 2 minggu kedepan",
+    "tugasnya ada apa aja ya",
+    "tubesnya ada apa aja ya",
+    "prnya ada apa aj",
+    "ganti tugas ID 100 menjadi 28/02/2022"
+    "Apa aj deadline yang dimiliki sejauh ini?",
+    "Hri ini ada apa aja",
+    "Buat beberapa hari ke depan ada kuis apa aja?",
+    "Deadline tugas IF2211 itu kapan?",
+    "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
+    "2 Minggu ke dpan ada praktikum apa aj?",
+    "Tugas buat 2 hari kedepan",
+    "Hri ini ada tubes apa aja?",
+    "Deadline tugas ID 4 diganti ke 29/06/2022",
+    "Tugas 3 dimajuin ke 28-04-2021",
+    "Pada pada ketika Tubes pada ketika IF2211 String Matching pada ketika 14/04/2021",
+    "300 Tubes 5 300 245 346 String Matching 300 dah kelar",
+]
+
+if DEBUG:
+    for test in tests:
+        print(test)
+        parse(test)
 
 
 # testsHelp = [
