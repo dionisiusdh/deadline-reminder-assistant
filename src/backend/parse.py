@@ -16,7 +16,7 @@ keywords_task = ["Kuis", "Ujian", "Tucil", "Tubes",
                  "Praktikum", "Tugas", "Ulangan"]
 
 # Debug mode
-DEBUG = False
+DEBUG = True
 
 
 def case_add_task(x):
@@ -90,8 +90,6 @@ def case_add_task(x):
 
         res["message"] = "[TASK BERHASIL DICATAT]\n"
         res["message"] += f"(ID: {taskId}) {res['tanggal']} - {res['kodeMatkul']} - {res['jenis']} - {res['topik']}"
-
-        res = res["message"]
 
         return res
 
@@ -472,9 +470,9 @@ def parse(x):
 
 tests = [
     # "deadline tubes IF2200 kapan ya"
-    # "hari ni ada tugas apa aja",
-    # "lihat Tugas 2 minggu kedepan",
-    # "lihat tucil 2 minggu kedepan",
+    "hari ni ada tugas apa aja",
+    "lihat Tugas 2 minggu kedepan",
+    "lihat tucil 2 minggu kedepan",
     # "tugasnya ada apa aja ya",
     # "tubesnya ada apa aja ya",
     # "prnya ada apa aj",

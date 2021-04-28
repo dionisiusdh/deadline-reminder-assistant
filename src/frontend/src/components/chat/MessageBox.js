@@ -2,7 +2,6 @@ import React from "react";
 
 const MessageBox = (props) => {
   const { message, gender } = props;
-  console.log(gender)
 
   const getMessageClassName = () => {
     if (message.sender == "user") {
@@ -16,8 +15,7 @@ const MessageBox = (props) => {
     if (message.sender == "user") {
       if (gender === 0) {
         return "msg-content-box-user";
-      }
-      else {
+      } else {
         return "msg-content-box-user-female";
       }
     } else {
@@ -52,8 +50,12 @@ const MessageBox = (props) => {
         {message.sender == "user" ? (
           gender === 0 ? (
             <>
-              <div className={`msg-content-box m-1 ${getMessageBoxClassName()}`}>
-                <p className="msg-content">{getParsedString(message.content)}</p>
+              <div
+                className={`msg-content-box m-1 ${getMessageBoxClassName()}`}
+              >
+                <p className="msg-content">
+                  {getParsedString(message.content)}
+                </p>
               </div>
               <img
                 src="https://i.pinimg.com/originals/51/f6/fb/51f6fb256629fc755b8870c801092942.png"
@@ -62,8 +64,12 @@ const MessageBox = (props) => {
             </>
           ) : (
             <>
-              <div className={`msg-content-box m-1 ${getMessageBoxClassName()}`}>
-                <p className="msg-content">{getParsedString(message.content)}</p>
+              <div
+                className={`msg-content-box m-1 ${getMessageBoxClassName()}`}
+              >
+                <p className="msg-content">
+                  {getParsedString(message.content)}
+                </p>
               </div>
               <img
                 src="https://lh3.googleusercontent.com/proxy/nbVfyCKDCzZpwUmnag7IxvYmdIN911ltJNL5eefU1lEn5ng-li9lgJ6smzeGa2e8fZ3-SQxlNiCVRLlKcxME391E5vmFwm9NntXithnu9g"
