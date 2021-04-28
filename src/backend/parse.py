@@ -275,7 +275,7 @@ def case_update_task(x, allTask):
     main_keywords_2 = [
         "deadline", "tenggat", "tanggal", "kumpul", "ngumpul",
         "tugas", "tgas", "tgs", "kuis", "ujian", "tucil",
-        "tubes", "praktikum", "pr", "task"
+        "tubes", "praktikum", "task"
     ]
 
     lenAllTask = len(allTask)
@@ -428,6 +428,48 @@ def case_other(x):
     return False
 
 
+def case_typo(x):
+
+    typoKeywords = [
+        "Kuis", "Ujian", "Tucil", "Tubes", "Praktikum", "Tugas", "Ulangan",
+        "tambahkan", "tambah", "baru", "pada", "ketika", "udah", "sudah",
+        "selesai", "usai", "tuntas", "tamat", "kelar", "lewat", "lihat",
+        "buat", "daftar", "list", "deadline", "dilakukan", "minggu", "hari",
+        "sekarang", "undur", "mundur", "maju", "ganti", "kapan"
+    ]
+
+    typoKeywords = [word.lower() for word in typoKeywords]
+
+    userWords = x.split()
+
+    print(userWords)
+
+    foundTypo = False
+
+    newSentence = []
+
+    for userWord in userWords:
+        foundTypoTemp = False
+        for typoWord in typoKeywords:
+            if (countSimilarity(userWord, typoWord) > 0.75):
+                newSentence.append(typoWord)
+                foundTypo = True
+                foundTypoTemp = True
+                break
+        if (not foundTypoTemp):
+            newSentence.append(userWord)
+
+    if (foundTypo):
+        newSentence = " ".join(newSentence)
+
+        message = "Mungkin maksud kamu:\n"
+        message += newSentence
+
+        return {"message": message}
+    else:
+        return False
+
+
 def parse(x):
     """
     Main parse
@@ -443,6 +485,7 @@ def parse(x):
     res_task_done = case_mark_task_done(x, allTask)
     res_help = case_help(x)
     res_other = case_other(x)
+    res_typo = case_typo(x)
 
     if (res_get_deadline_task):
         print(res_get_deadline_task) if DEBUG else ""
@@ -465,6 +508,9 @@ def parse(x):
     elif (res_other):
         print(res_other) if DEBUG else ""
         return res_other
+    elif (res_typo):
+        print(res_typo) if DEBUG else ""
+        return res_typo
     else:
         print(case_error()) if DEBUG else ""
         return case_error()
