@@ -3,7 +3,7 @@ import ChatBox from "./components/chat/ChatBox";
 import "./App.css";
 
 function App() {
-  const [gender, setGender] = React.useState(0)
+  const [gender, setGender] = React.useState(0);
   return (
     <>
       <div className="container d-flex flex-column align-items-center justify-content-center">
@@ -14,42 +14,42 @@ function App() {
               <h2>Deadline Reminder Assistant Chatbot</h2>
             </div>
             <div className="d-flex flex-row align-items-center">
-              {gender == 0 ?
-                  <>
-                    <img
-                      src="https://previews.123rf.com/images/victor85/victor851711/victor85171100224/90388679-male-sex-symbol-circle-icon-black-round-minimalist-icon-isolated-on-white-background-gender-symbol-s.jpg"
-                      alt="pic"
-                      onClick={() => setGender(0)}
-                      className="img-selected"
-                    />
-                    <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7FKv6jQfsogh9NRdn-wfRdYhIVxz5amLlmw&usqp=CAU"
-                      alt="pic"
-                      onClick={() => setGender(1)}
-                      className="img-unselected"
-                    />
-                  </>
-                :
-                  <>
-                    <img
-                      src="https://previews.123rf.com/images/victor85/victor851711/victor85171100224/90388679-male-sex-symbol-circle-icon-black-round-minimalist-icon-isolated-on-white-background-gender-symbol-s.jpg"
-                      alt="pic"
-                      onClick={() => setGender(0)}
-                      className="img-unselected"
-                    />
-                    <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7FKv6jQfsogh9NRdn-wfRdYhIVxz5amLlmw&usqp=CAU"
-                      alt="pic"
-                      onClick={() => setGender(1)}
-                      className="img-selected"
-                    />
-                  </>
-              }
+              {gender === 0 ? (
+                <>
+                  <img
+                    src="https://previews.123rf.com/images/victor85/victor851711/victor85171100224/90388679-male-sex-symbol-circle-icon-black-round-minimalist-icon-isolated-on-white-background-gender-symbol-s.jpg"
+                    alt="pic"
+                    onClick={() => setGender(0)}
+                    className="img-selected"
+                  />
+                  <img
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7FKv6jQfsogh9NRdn-wfRdYhIVxz5amLlmw&usqp=CAU"
+                    alt="pic"
+                    onClick={() => setGender(1)}
+                    className="img-unselected"
+                  />
+                </>
+              ) : (
+                <>
+                  <img
+                    src="https://previews.123rf.com/images/victor85/victor851711/victor85171100224/90388679-male-sex-symbol-circle-icon-black-round-minimalist-icon-isolated-on-white-background-gender-symbol-s.jpg"
+                    alt="pic"
+                    onClick={() => setGender(0)}
+                    className="img-unselected"
+                  />
+                  <img
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7FKv6jQfsogh9NRdn-wfRdYhIVxz5amLlmw&usqp=CAU"
+                    alt="pic"
+                    onClick={() => setGender(1)}
+                    className="img-selected"
+                  />
+                </>
+              )}
             </div>
           </div>
         </div>
 
-        <ChatBox gender={gender}/>
+        <ChatBox gender={gender} />
       </div>
       <style>
         {`
@@ -80,6 +80,12 @@ function App() {
 
           .img-unselected:hover {
             cursor: pointer;
+          }
+
+          @media screen and (max-width: 800px) {
+            .home-title {
+              width: 100%; 
+            }
           }
         `}
       </style>

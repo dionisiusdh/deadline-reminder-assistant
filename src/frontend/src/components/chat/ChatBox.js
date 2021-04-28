@@ -3,7 +3,7 @@ import ChatInput from "./ChatInput";
 import ChatWindow from "./ChatWindow";
 
 const ChatBox = (props) => {
-  const { gender } = props
+  const { gender } = props;
   const messageEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -25,7 +25,11 @@ const ChatBox = (props) => {
   return (
     <>
       <div className="chat-box d-flex flex-column justify-content-between align-items-center">
-        <ChatWindow messages={messages} messageEndRef={messageEndRef} gender={gender}/>
+        <ChatWindow
+          messages={messages}
+          messageEndRef={messageEndRef}
+          gender={gender}
+        />
 
         <ChatInput scrollToBottom={scrollToBottom} addMessages={addMessages} />
       </div>
@@ -37,6 +41,13 @@ const ChatBox = (props) => {
                 height: 86.5vh;
                 max-height: 86.5vh;
             }
+
+            @media screen and (max-width: 800px) {
+              .chat-box {
+                width: 100%; 
+              }
+            }
+            
           `}
       </style>
     </>

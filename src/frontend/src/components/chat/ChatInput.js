@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 const ChatInput = (props) => {
   const { scrollToBottom, addMessages } = props;
@@ -7,8 +7,6 @@ const ChatInput = (props) => {
 
   const handleSendMessage = async () => {
     if (inputContent.trim()) {
-      console.log(inputContent);
-
       var newMessages = [
         {
           sender: "user",
@@ -25,7 +23,6 @@ const ChatInput = (props) => {
       axios
         .post("http://localhost:5000/bot", requestBody)
         .then((res) => {
-          console.log(res.data.message);
           const reply = {
             sender: "bot",
             content: res.data.message,
@@ -34,7 +31,6 @@ const ChatInput = (props) => {
           newMessages = [...newMessages, reply];
         })
         .catch(() => {
-          console.log("errr");
           const reply = {
             sender: "bot",
             content: "Error occured! Coba cek server backend kamu!",

@@ -4,7 +4,7 @@ const MessageBox = (props) => {
   const { message, gender } = props;
 
   const getMessageClassName = () => {
-    if (message.sender == "user") {
+    if (message.sender === "user") {
       return "justify-content-end text-right";
     } else {
       return "";
@@ -12,7 +12,7 @@ const MessageBox = (props) => {
   };
 
   const getMessageBoxClassName = () => {
-    if (message.sender == "user") {
+    if (message.sender === "user") {
       if (gender === 0) {
         return "msg-content-box-user";
       } else {
@@ -24,13 +24,12 @@ const MessageBox = (props) => {
   };
 
   const getParsedString = (message) => {
-    console.log(message);
     const seperattedNewLineString = message.split("\n");
 
     return (
       <>
         {seperattedNewLineString.map((words, index) => {
-          if (index == 0) {
+          if (index === 0) {
             return words;
           } else {
             return (
@@ -47,7 +46,7 @@ const MessageBox = (props) => {
   return (
     <>
       <div className={`msg d-flex align-items-center ${getMessageClassName()}`}>
-        {message.sender == "user" ? (
+        {message.sender === "user" ? (
           gender === 0 ? (
             <>
               <div
