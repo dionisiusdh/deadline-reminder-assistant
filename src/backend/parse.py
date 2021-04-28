@@ -13,7 +13,7 @@ from utils import *
 
 # ===== KEYWORDS =====
 keywords_task = ["Kuis", "Ujian", "Tucil", "Tubes",
-                 "Praktikum", "Tugas", "PR", "Ulangan"]
+                 "Praktikum", "Tugas", "Ulangan"]
 
 # Debug mode
 DEBUG = False
