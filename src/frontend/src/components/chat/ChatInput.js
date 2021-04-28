@@ -21,7 +21,7 @@ const ChatInput = (props) => {
       };
 
       axios
-        .post("http://localhost:5000/bot", requestBody)
+        .post("https://ghembot-api.herokuapp.com/bot", requestBody)
         .then((res) => {
           const reply = {
             sender: "bot",
