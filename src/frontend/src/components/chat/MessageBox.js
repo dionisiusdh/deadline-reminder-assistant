@@ -70,10 +70,7 @@ const MessageBox = (props) => {
                   {getParsedString(message.content)}
                 </p>
               </div>
-              <img
-                src="https://lh3.googleusercontent.com/proxy/nbVfyCKDCzZpwUmnag7IxvYmdIN911ltJNL5eefU1lEn5ng-li9lgJ6smzeGa2e8fZ3-SQxlNiCVRLlKcxME391E5vmFwm9NntXithnu9g"
-                alt="pic"
-              />
+              <img src="https://i.ibb.co/BwpS5mB/perempuan.png" alt="pic" />
             </>
           )
         ) : (
