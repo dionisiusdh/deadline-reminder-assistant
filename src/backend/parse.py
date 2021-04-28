@@ -210,7 +210,8 @@ def case_show_all_task(x, allTask):
                         matkul = allTask[i]["mataKuliah"]
                         topik = allTask[i]["topik"].capitalize()
                         jenis = allTask[i]["jenis"].capitalize()
-                        res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
+                        taskid = allTask[i]["taskId"]
+                        res["message"] += f"(ID: {taskid}). {tanggal} - {matkul} - {jenis} - {topik} \n"
         elif (isPatternExistKMP(keywords_B, x) and len(get_number(x)) != 0):
             # kasus B : N Minggu ke depan
             for i in range(len(allTask)):
@@ -220,7 +221,8 @@ def case_show_all_task(x, allTask):
                         matkul = allTask[i]["mataKuliah"]
                         topik = allTask[i]["topik"].capitalize()
                         jenis = allTask[i]["jenis"].capitalize()
-                        res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
+                        taskid = allTask[i]["taskId"]
+                        res["message"] += f"(ID: {taskid}). {tanggal} - {matkul} - {jenis} - {topik} \n"
         elif (isPatternExistKMP(keywords_C, x) and len(get_number(x)) != 0):
             # kasus C : N Hari ke depan
             for i in range(len(allTask)):
@@ -230,7 +232,8 @@ def case_show_all_task(x, allTask):
                         matkul = allTask[i]["mataKuliah"]
                         topik = allTask[i]["topik"].capitalize()
                         jenis = allTask[i]["jenis"].capitalize()
-                        res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
+                        taskid = allTask[i]["taskId"]
+                        res["message"] += f"(ID: {taskid}). {tanggal} - {matkul} - {jenis} - {topik} \n"
         elif (isPatternExistKMP(keywords_D, x)):
             # kasus D : Hari ini
             for i in range(len(allTask)):
@@ -240,7 +243,8 @@ def case_show_all_task(x, allTask):
                         matkul = allTask[i]["mataKuliah"]
                         topik = allTask[i]["topik"].capitalize()
                         jenis = allTask[i]["jenis"].capitalize()
-                        res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
+                        taskid = allTask[i]["taskId"]
+                        res["message"] += f"(ID: {taskid}). {tanggal} - {matkul} - {jenis} - {topik} \n"
         else:
             # all
             for i in range(len(allTask)):
@@ -251,7 +255,8 @@ def case_show_all_task(x, allTask):
                         matkul = allTask[i]["mataKuliah"]
                         topik = allTask[i]["topik"].capitalize()
                         jenis = allTask[i]["jenis"].capitalize()
-                        res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
+                        taskid = allTask[i]["taskId"]
+                        res["message"] += f"(ID: {taskid}). {tanggal} - {matkul} - {jenis} - {topik} \n"
 
         if (res["message"] == ""):
             return {"message": "Kamu tidak punya tugas terkait dijangka waktu ini"}
@@ -285,7 +290,7 @@ def case_update_task(x, allTask):
             tasks = db.collection(
                 TASK_FIRESTORE_COLLECTIONS).document(taskId[0])
             update_data = {"tanggal": changeDate[0]}
-            # tasks.update(update_data)
+            tasks.update(update_data)
             return {"message": f"Berhasil mengubah deadline task {taskId[0]} menjadi {changeDate[0]}"}
 
     return False
