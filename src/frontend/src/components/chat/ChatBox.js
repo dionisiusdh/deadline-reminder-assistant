@@ -2,7 +2,8 @@ import React, { useRef, useState } from "react";
 import ChatInput from "./ChatInput";
 import ChatWindow from "./ChatWindow";
 
-const ChatBox = () => {
+const ChatBox = (props) => {
+  const { gender } = props
   const messageEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -24,7 +25,7 @@ const ChatBox = () => {
   return (
     <>
       <div className="chat-box d-flex flex-column justify-content-between align-items-center">
-        <ChatWindow messages={messages} messageEndRef={messageEndRef} />
+        <ChatWindow messages={messages} messageEndRef={messageEndRef} gender={gender}/>
 
         <ChatInput scrollToBottom={scrollToBottom} addMessages={addMessages} />
       </div>

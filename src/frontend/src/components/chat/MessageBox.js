@@ -1,7 +1,8 @@
 import React from "react";
 
 const MessageBox = (props) => {
-  const { message } = props;
+  const { message, gender } = props;
+  console.log(gender)
 
   const getMessageClassName = () => {
     if (message.sender == "user") {
@@ -13,7 +14,12 @@ const MessageBox = (props) => {
 
   const getMessageBoxClassName = () => {
     if (message.sender == "user") {
-      return "msg-content-box-user";
+      if (gender === 0) {
+        return "msg-content-box-user";
+      }
+      else {
+        return "msg-content-box-user-female";
+      }
     } else {
       return "msg-content-box-bot";
     }
@@ -44,15 +50,27 @@ const MessageBox = (props) => {
     <>
       <div className={`msg d-flex align-items-center ${getMessageClassName()}`}>
         {message.sender == "user" ? (
-          <>
-            <div className={`msg-content-box m-1 ${getMessageBoxClassName()}`}>
-              <p className="msg-content">{getParsedString(message.content)}</p>
-            </div>
-            <img
-              src="https://i.pinimg.com/originals/51/f6/fb/51f6fb256629fc755b8870c801092942.png"
-              alt="pic"
-            />
-          </>
+          gender === 0 ? (
+            <>
+              <div className={`msg-content-box m-1 ${getMessageBoxClassName()}`}>
+                <p className="msg-content">{getParsedString(message.content)}</p>
+              </div>
+              <img
+                src="https://i.pinimg.com/originals/51/f6/fb/51f6fb256629fc755b8870c801092942.png"
+                alt="pic"
+              />
+            </>
+          ) : (
+            <>
+              <div className={`msg-content-box m-1 ${getMessageBoxClassName()}`}>
+                <p className="msg-content">{getParsedString(message.content)}</p>
+              </div>
+              <img
+                src="https://lh3.googleusercontent.com/proxy/nbVfyCKDCzZpwUmnag7IxvYmdIN911ltJNL5eefU1lEn5ng-li9lgJ6smzeGa2e8fZ3-SQxlNiCVRLlKcxME391E5vmFwm9NntXithnu9g"
+                alt="pic"
+              />
+            </>
+          )
         ) : (
           <>
             <img
@@ -81,6 +99,11 @@ const MessageBox = (props) => {
             .msg-content-box-user {
                 color: #FFF;
                 background: #0b93f6;
+            }
+
+            .msg-content-box-user-female {
+                color: #FFF;
+                background: #fc46aa;
             }
 
             .msg-content-box-bot {

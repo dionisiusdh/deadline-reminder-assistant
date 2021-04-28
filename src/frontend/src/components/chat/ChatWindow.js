@@ -2,7 +2,7 @@ import React from "react";
 import MessageBox from "./MessageBox";
 
 const ChatWindow = (props) => {
-  const { messages, messageEndRef } = props;
+  const { messages, messageEndRef, gender } = props;
 
   return (
     <>
@@ -10,7 +10,7 @@ const ChatWindow = (props) => {
         {messages.map((message) => {
           return (
             <div className="">
-              <MessageBox message={message} />
+              <MessageBox message={message} gender={gender}/>
             </div>
           );
         })}
