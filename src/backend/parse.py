@@ -51,7 +51,7 @@ def case_add_task(x):
         startIndex = int(KMP(res["kodeMatkul"], x, False)[0]) + 6
         endIndex = -1
         increment = 0
-        
+
         endIndexFound = False
 
         for preposition in listPreposition:
@@ -85,7 +85,7 @@ def case_mark_task_done(x):
     x = x.lower()                                   # lower case x agar seragam
 
     res = {
-        "message":""
+        "message": ""
     }
 
     # TaskId db panjang. Asumsi hanya ada satu id pada input
@@ -111,14 +111,14 @@ def case_mark_task_done(x):
         for taskId in listTaskId:
             for index in KMP(taskId, x, False):
                 listIndex.append(index)
-            
+
         listIndex.sort()
 
         for index in listIndex:
             if(index > typeIndex):
                 realTaskIndex = index
                 break
-        
+
         for taskId in listTaskId:
             for index in KMP(taskId, x, False):
                 if (index == realTaskIndex):
@@ -133,6 +133,7 @@ def case_mark_task_done(x):
 
         return res
     return False
+
 
 def case_show_all_task(x):
     """
@@ -379,49 +380,26 @@ def parse(x):
     """
     Main parse
     """
-    if (case_add_task(x)):
+    if (case_show_all_task(x)):
+        res = case_show_all_task(x)
+    elif (case_add_task(x)):
         res = case_add_task(x)
-    # elif (case_update_task(x)):
-    #     res = case_update_task(x)
-    # elif (case_get_deadline_task(x)):
-    #     res = case_get_deadline_task(x)
-    # elif (case_help(x)):
-    #     res = case_help(x)
-    # elif (case_other(x)):
-    #     res = case_other(x)
+    elif (case_update_task(x)):
+        res = case_update_task(x)
+    elif (case_get_deadline_task(x)):
+        res = case_get_deadline_task(x)
+    elif (case_mark_task_done(x)):
+        res = case_mark_task_done(x)
+    elif (case_help(x)):
+        res = case_help(x)
+    elif (case_other(x)):
+        res = case_other(x)
     else:
         res = case_error()
 
-    print(f"{test} : {res}")
     return res
 
-# tests=[
-#     "Apa aj deadline yang dimiliki sejauh ini?",
-#     "Buat beberapa hari ke depan ada kuis apa aja?",
-#     "Deadline tugas IF2211 itu kapan?",
-#     "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
-#     "2 Minggu ke dpan ada praktikum apa aj?",
-#     "Tugas buat 2 hari kedepan",
-#     "Hri ini ada tubes apa aja?",
-#     "Deadline tugas ID 2 diganti ke 28/04/2021",
-#     "Tugas 3 dimajuin ke 28-04-2021"
-# ]
-
-    # if (case_show_all_task(x)):
-    #     res = case_show_all_task(x)
-    # elif (case_update_task(x)):
-    #     res = case_update_task(x)
-    # elif (case_help(x)):
-    #     res = case_help(x)
-    # if (case_add_task(x)):
-    #     res = case_add_task(x)
-    #     print(f"{test} : {res}")
-    #     return res
-    # else:
-    #     res = case_error()
-
-
-tests = [
+# tests = [
     # "Apa aj deadline yang dimiliki sejauh ini?",
     # "Hri ini ada apa aja",
     # "Buat beberapa hari ke depan ada kuis apa aja?",
@@ -432,13 +410,13 @@ tests = [
     # "Hri ini ada tubes apa aja?",
     # "Deadline tugas ID 4 diganti ke 29/06/2022",
     # "Tugas 3 dimajuin ke 28-04-2021",
-    "Pada pada ketika Tubes pada ketika IF2211 String Matching pada ketika 14/04/2021",
+    # "Pada pada ketika Tubes pada ketika IF2211 String Matching pada ketika 14/04/2021",
     # "300 Tubes 3 300 245 346 String Matching 300 dah kelar",
-]
+# ]
 
 
-for test in tests:
-    parse(test)
+# for test in tests:
+#    parse(test)
 
 
 # testsHelp = [
