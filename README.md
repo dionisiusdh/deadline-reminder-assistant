@@ -4,6 +4,8 @@
 
 ![](./demo.gif)
 
+[**Live Demo**](ghembot.netlify.app)
+
 | Anggota                 | NIM      |
 | ----------------------- | -------- |
 | Dionisius Darryl H.     | 13519058 |
