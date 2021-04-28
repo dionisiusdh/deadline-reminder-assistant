@@ -13,4 +13,13 @@ def firestoreQueryResultsToDictArray(firestoreQueryResults):
 def getNewId(collection):
     result = firestoreQueryResultsToDictArray(
         db.collection(collection).stream())
-    return str(len(result) + 1)
+
+    maxId = 0
+
+    if (len(result) > 0):
+        for task in result:
+            taskId = int(task["taskId"])
+
+            maxId = max(maxId, taskId)
+
+    return str(maxId)

@@ -52,7 +52,7 @@ def case_add_task(x):
         startIndex = int(KMP(res["kodeMatkul"], x, False)[0]) + 6
         endIndex = -1
         increment = 0
-        
+
         endIndexFound = False
 
         for preposition in listPreposition:
@@ -99,10 +99,10 @@ def case_mark_task_done(x):
     """
 
     # lower case x agar seragam
-    x = x.lower()                                   
+    x = x.lower()
 
     res = {
-        "message":""
+        "message": ""
     }
 
     # TaskId db panjang. Asumsi posisi id Task: <keywords_task> <taskId>
@@ -125,14 +125,14 @@ def case_mark_task_done(x):
         for taskId in listTaskId:
             for index in KMP(taskId, x, False):
                 listIndex.append(index)
-            
+
         listIndex.sort()
 
         for index in listIndex:
             if(index > typeIndex):
                 realTaskIndex = index
                 break
-        
+
         for taskId in listTaskId:
             for index in KMP(taskId, x, False):
                 if (index == realTaskIndex):
@@ -141,7 +141,7 @@ def case_mark_task_done(x):
 
         # Get all task
         allTask = firestoreQueryResultsToDictArray(
-            db.collection(TASK_FIRESTORE_COLLECTIONS).stream())     
+            db.collection(TASK_FIRESTORE_COLLECTIONS).stream())
 
         # Mencari apakah task dengan Id yang diinput tersedia
         idFound = False
@@ -149,11 +149,12 @@ def case_mark_task_done(x):
             if(task['taskId'] == realTaskId):
                 idFound = True
                 break
-        
+
         # Handle kondisi ketika ditemukan id maupun tidak ditemukan
         if(idFound):
             res["message"] = f"Berhasil menandai task {realTaskId} menjadi selesai"
-            tasks = db.collection(TASK_FIRESTORE_COLLECTIONS).document(realTaskId)
+            tasks = db.collection(
+                TASK_FIRESTORE_COLLECTIONS).document(realTaskId)
             tasks.delete()
             return res
         else:
@@ -320,9 +321,8 @@ def case_help(x):
 
 def case_get_deadline_task(x):
 
-    isTucilExist = isPatternExistKMP(["tucil"], x, False)
-    isTubesExist = isPatternExistKMP(["tubes"], x, False)
-    isTugasExist = isTucilExist or isTubesExist
+    keywordTugas = ["tucil", "task", "tubes", "tugas"]
+    isTugasExist = isPatternExistKMP(keywordTugas, x, False)
 
     main_keywords_1 = ["deadline", "tenggat"]
     main_keywords_2 = ["kapan"]
@@ -340,16 +340,21 @@ def case_get_deadline_task(x):
         # since we are only able to use 'in' query once only, getting the data based on the jenis are done manually
         tasksResult = db.collection(TASK_FIRESTORE_COLLECTIONS).where(
             "mataKuliah", "in", matkulNames)
+        for keyword in keywordTugas:
+            if (isPatternExistKMP([keyword], x, False)):
+                taskQueryResult = tasksResult.where("jenis", "==", keyword)
+                tasks += firestoreQueryResultsToDictArray(
+                    taskQueryResult.stream())
 
-        # manually query to find the suitable jenis attribute
-        if (isTucilExist):
-            taskQueryResult = tasksResult.where("jenis", "==", "tucil")
-            tasks += firestoreQueryResultsToDictArray(
-                taskQueryResult.stream())
-        if (isTubesExist):
-            taskQueryResult = tasksResult.where("jenis", "==", "tubes")
-            tasks += firestoreQueryResultsToDictArray(
-                taskQueryResult.stream())
+        # filter the date to only include that the date is more than today's date
+        tasksTemp = tasks
+        tasks = []
+        dateToday = datetime.now()
+        for task in tasksTemp:
+            dateTask = str_to_datetime(task["tanggal"])
+
+            if dateTask >= dateToday:
+                tasks.append(task)
 
         if (len(tasks) == 0):
             return {"message": f"Tidak ditemukan deadline"}
