@@ -12,7 +12,7 @@ from date import *
 from utils import *
 
 # ===== KEYWORDS =====
-keywords_task = ["Kuis", "Ujian", "Tucil",
+keywords_task = ["Kuis", "Ujian", "Tucil", "Task",
                  "Tubes", "Praktikum", "Tugas", "PR", "Ulangan"]
 
 
@@ -25,6 +25,7 @@ def case_add_task(x):
     x = x.lower()                                   # lower case x agar seragam
 
     res = {
+        "taskId": "",
         "tanggal": "",
         "kodeMatkul": "",
         "jenis": "",
@@ -51,7 +52,7 @@ def case_add_task(x):
         startIndex = int(KMP(res["kodeMatkul"], x, False)[0]) + 6
         endIndex = -1
         increment = 0
-
+        
         endIndexFound = False
 
         for preposition in listPreposition:
@@ -66,9 +67,24 @@ def case_add_task(x):
         if(endIndex == -1):
             return False
 
+        taskId = getNewId(TASK_FIRESTORE_COLLECTIONS)
+
         res["topik"] = x[startIndex:endIndex].strip(" ").capitalize()
+        res["taskId"] = taskId
+
+        taskData = {
+            "taskId": taskId,
+            "tanggal": res["tanggal"],
+            "mataKuliah": res["kodeMatkul"],
+            "jenis": res["jenis"],
+            "topik": res["topik"]
+        }
+
+        taskRef = db.collection(TASK_FIRESTORE_COLLECTIONS).document(taskId)
+        taskRef.set(taskData)
+
         res["message"] = "[TASK BERHASIL DICATAT]\n"
-        res["message"] += f"(ID: {2}) {res['tanggal']} - {res['kodeMatkul']} - {res['jenis']} - {res['topik']}"
+        res["message"] += f"(ID: {taskId}) {res['tanggal']} - {res['kodeMatkul']} - {res['jenis']} - {res['topik']}"
 
         return res
 
@@ -82,23 +98,21 @@ def case_mark_task_done(x):
     return : boolean
     """
 
-    x = x.lower()                                   # lower case x agar seragam
+    # lower case x agar seragam
+    x = x.lower()                                   
 
     res = {
-        "message": ""
+        "message":""
     }
 
-    # TaskId db panjang. Asumsi hanya ada satu id pada input
+    # TaskId db panjang. Asumsi posisi id Task: <keywords_task> <taskId>
     listTaskId = get_number(x)
 
     done_keywords = ["udah", "sudah", "udh", "selesai", "usai",
                      "tuntas", "tamat", "kelar", "klr", "lewat", "sls"]
 
-    extra_keywords_task = keywords_task
-    extra_keywords_task.append("task")
-
     listDone = get_all_same_pattern(done_keywords, x)
-    listTask = get_all_same_pattern(extra_keywords_task, x)
+    listTask = get_all_same_pattern(keywords_task, x)
 
     if (len(listDone) > 0 and len(listTask) == 1 and len(listTaskId) > 0):
         taskIdFound = False
@@ -111,25 +125,38 @@ def case_mark_task_done(x):
         for taskId in listTaskId:
             for index in KMP(taskId, x, False):
                 listIndex.append(index)
-
+            
         listIndex.sort()
 
         for index in listIndex:
             if(index > typeIndex):
                 realTaskIndex = index
                 break
-
+        
         for taskId in listTaskId:
             for index in KMP(taskId, x, False):
                 if (index == realTaskIndex):
                     realTaskId = taskId
                     break
 
-        # tasks = firestoreQueryResultsToDictArray(db.collection(TASK_FIRESTORE_COLLECTIONS).document(realTaskId))
-        # print(tasks)
-        # update_data = {"tanggal": changeDate[0]}
-        # tasks.update(update_data)
-        res["message"] = f"Berhasil menandai task {realTaskId} menjadi selesai"
+        # Get all task
+        allTask = firestoreQueryResultsToDictArray(
+            db.collection(TASK_FIRESTORE_COLLECTIONS).stream())     
+
+        # Mencari apakah task dengan Id yang diinput tersedia
+        idFound = False
+        for task in allTask:
+            if(task['taskId'] == realTaskId):
+                idFound = True
+                break
+        
+        # Handle kondisi ketika ditemukan id maupun tidak ditemukan
+        if(idFound):
+            tasks = db.collection(TASK_FIRESTORE_COLLECTIONS).document(realTaskId)
+            tasks.delete()
+            res["message"] = f"Berhasil menandai task {realTaskId} menjadi selesai"
+        else:
+            res["message"] = "Task dengan Id tersebut tidak dapat ditemukan"
 
         return res
     return False
@@ -380,10 +407,11 @@ def parse(x):
     """
     Main parse
     """
+    res_add = case_add_task(x)
     if (case_show_all_task(x)):
         res = case_show_all_task(x)
-    elif (case_add_task(x)):
-        res = case_add_task(x)
+    elif (res_add != False):
+        res = res_add
     elif (case_update_task(x)):
         res = case_update_task(x)
     elif (case_get_deadline_task(x)):
@@ -399,7 +427,7 @@ def parse(x):
 
     return res
 
-# tests = [
+tests = [
     # "Apa aj deadline yang dimiliki sejauh ini?",
     # "Hri ini ada apa aja",
     # "Buat beberapa hari ke depan ada kuis apa aja?",
@@ -411,12 +439,12 @@ def parse(x):
     # "Deadline tugas ID 4 diganti ke 29/06/2022",
     # "Tugas 3 dimajuin ke 28-04-2021",
     # "Pada pada ketika Tubes pada ketika IF2211 String Matching pada ketika 14/04/2021",
-    # "300 Tubes 3 300 245 346 String Matching 300 dah kelar",
-# ]
+    "300 Tubes 5 300 245 346 String Matching 300 dah kelar",
+]
 
 
-# for test in tests:
-#    parse(test)
+for test in tests:
+   parse(test)
 
 
 # testsHelp = [
