@@ -2,7 +2,7 @@
 
 > Personal Deadline Reminder Assistant
 
-[**Live Demo**](ghembot.netlify.app)
+[**Live Demo**](https://ghembot.netlify.app/)
 
 ![](./demo.gif)
 
