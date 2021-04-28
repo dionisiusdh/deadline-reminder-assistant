@@ -248,10 +248,12 @@ def case_show_all_task(x, allTask):
             for i in range(len(allTask)):
                 if (task_type.lower() == "tugas" or (task_type.lower() == allTask[i]["jenis"].lower())):
                     tanggal = allTask[i]["tanggal"]
-                    matkul = allTask[i]["mataKuliah"]
-                    topik = allTask[i]["topik"].capitalize()
-                    jenis = allTask[i]["jenis"].capitalize()
-                    res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
+                    if (str_to_date(tanggal) >= today):
+                        tanggal = allTask[i]["tanggal"]
+                        matkul = allTask[i]["mataKuliah"]
+                        topik = allTask[i]["topik"].capitalize()
+                        jenis = allTask[i]["jenis"].capitalize()
+                        res["message"] += f"(ID: {i + 1}). {tanggal} - {matkul} - {jenis} - {topik} \n"
 
         if (res["message"] == ""):
             return {"message": "Kamu tidak punya tugas terkait dijangka waktu ini"}
@@ -446,7 +448,7 @@ def parse(x):
         print(res_get_deadline_task) if DEBUG else ""
         return res_get_deadline_task
     elif (res_show_all_task):
-        print(res_get_deadline_task) if DEBUG else ""
+        print(res_show_all_task) if DEBUG else ""
         return res_show_all_task
     elif (res_add):
         print(res_add) if DEBUG else ""
