@@ -91,8 +91,6 @@ def case_add_task(x):
         res["message"] = "[TASK BERHASIL DICATAT]\n"
         res["message"] += f"(ID: {taskId}) {res['tanggal']} - {res['kodeMatkul']} - {res['jenis']} - {res['topik']}"
 
-        res = res["message"]
-
         return res
 
     return False
@@ -526,7 +524,7 @@ tests = [
     # "Apa aj deadline yang dimiliki sejauh ini?",
     # "Hri ini ada apa aja",
     # "Buat beberapa hari ke depan ada kuis apa aja?",
-    # "Deadline tugas IF2211 itu kapan?",
+    # "Deadline tugas IF2200 itu kapan?",
     # "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
     # "2 Minggu ke dpan ada praktikum apa aj?",
     # "Tugas buat 2 hari kedepan",

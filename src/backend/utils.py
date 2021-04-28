@@ -22,4 +22,4 @@ def getNewId(collection):
 
             maxId = max(maxId, taskId)
 
-    return str(maxId)
+    return str(maxId+1)
