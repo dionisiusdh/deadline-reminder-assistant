@@ -380,7 +380,7 @@ def case_get_deadline_task(x):
                 if (i != 0):
                     messageResponse += "\n"
 
-                messageResponse += f'{i + 1}. {task["mataKuliah"]} - {task["topik"]} : {task["tanggal"]}'
+                messageResponse += f'Deadline {task["jenis"]} {task["mataKuliah"]} itu di tanggal {task["tanggal"]}. Semangat :)'
 
             return {"message": messageResponse}
 
@@ -432,14 +432,17 @@ def parse(x):
 
     res_show_all_task = case_show_all_task(x, allTask)
     res_update_task = case_update_task(x, allTask)
-    res_deadline_task = case_get_deadline_task(x)
+    res_get_deadline_task = case_get_deadline_task(x)
     res_add = case_add_task(x)
     res_task_done = case_mark_task_done(x, allTask)
     res_help = case_help(x)
     res_other = case_other(x)
 
-    if (res_show_all_task):
-        print(res_show_all_task) if DEBUG else ""
+    if (res_get_deadline_task):
+        print(res_get_deadline_task) if DEBUG else ""
+        return res_get_deadline_task
+    elif (res_show_all_task):
+        print(res_get_deadline_task) if DEBUG else ""
         return res_show_all_task
     elif (res_add):
         print(res_add) if DEBUG else ""
@@ -447,9 +450,6 @@ def parse(x):
     elif (res_update_task):
         print(res_update_task) if DEBUG else ""
         return res_update_task
-    elif (res_deadline_task):
-        print(res_deadline_task) if DEBUG else ""
-        return res_deadline_task
     elif (res_task_done):
         print(res_task_done) if DEBUG else ""
         return res_task_done
@@ -465,25 +465,26 @@ def parse(x):
 
 
 tests = [
-    "hari ni ada tugas apa aja",
-    "lihat Tugas 2 minggu kedepan",
-    "lihat tucil 2 minggu kedepan",
-    "tugasnya ada apa aja ya",
-    "tubesnya ada apa aja ya",
-    "prnya ada apa aj",
-    "ganti tugas ID 100 menjadi 28/02/2022"
-    "Apa aj deadline yang dimiliki sejauh ini?",
-    "Hri ini ada apa aja",
-    "Buat beberapa hari ke depan ada kuis apa aja?",
-    "Deadline tugas IF2211 itu kapan?",
-    "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
-    "2 Minggu ke dpan ada praktikum apa aj?",
-    "Tugas buat 2 hari kedepan",
-    "Hri ini ada tubes apa aja?",
-    "Deadline tugas ID 4 diganti ke 29/06/2022",
-    "Tugas 3 dimajuin ke 28-04-2021",
-    "Pada pada ketika Tubes pada ketika IF2211 String Matching pada ketika 14/04/2021",
-    "300 Tubes 5 300 245 346 String Matching 300 dah kelar",
+    # "deadline tubes IF2200 kapan ya"
+    # "hari ni ada tugas apa aja",
+    # "lihat Tugas 2 minggu kedepan",
+    # "lihat tucil 2 minggu kedepan",
+    # "tugasnya ada apa aja ya",
+    # "tubesnya ada apa aja ya",
+    # "prnya ada apa aj",
+    # "ganti tugas ID 100 menjadi 28/02/2022"
+    # "Apa aj deadline yang dimiliki sejauh ini?",
+    # "Hri ini ada apa aja",
+    # "Buat beberapa hari ke depan ada kuis apa aja?",
+    # "Deadline tugas IF2211 itu kapan?",
+    # "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
+    # "2 Minggu ke dpan ada praktikum apa aj?",
+    # "Tugas buat 2 hari kedepan",
+    # "Hri ini ada tubes apa aja?",
+    # "Deadline tugas ID 4 diganti ke 29/06/2022",
+    # "Tugas 3 dimajuin ke 28-04-2021",
+    # "Pada pada ketika Tubes pada ketika IF2211 String Matching pada ketika 14/04/2021",
+    # "300 Tubes 5 300 245 346 String Matching 300 dah kelar",
 ]
 
 if DEBUG:
