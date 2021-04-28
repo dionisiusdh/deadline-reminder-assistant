@@ -37,7 +37,7 @@ const ChatInput = (props) => {
           console.log("errr");
           const reply = {
             sender: "bot",
-            content: "Error occured!",
+            content: "Error occured! Coba cek server backend kamu!",
           };
 
           newMessages = [...newMessages, reply];
