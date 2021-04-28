@@ -442,8 +442,6 @@ def case_typo(x):
 
     userWords = x.split()
 
-    print(userWords)
-
     foundTypo = False
 
     newSentence = []
