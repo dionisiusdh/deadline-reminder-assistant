@@ -16,7 +16,7 @@ keywords_task = ["Kuis", "Ujian", "Tucil", "Tubes",
                  "Praktikum", "Tugas", "Ulangan"]
 
 # Debug mode
-DEBUG = True
+DEBUG = False
 
 
 def case_add_task(x):
@@ -470,9 +470,9 @@ def parse(x):
 
 tests = [
     # "deadline tubes IF2200 kapan ya"
-    "hari ni ada tugas apa aja",
-    "lihat Tugas 2 minggu kedepan",
-    "lihat tucil 2 minggu kedepan",
+    # "hari ni ada tugas apa aja",
+    # "lihat Tugas 2 minggu kedepan",
+    # "lihat tucil 2 minggu kedepan",
     # "tugasnya ada apa aja ya",
     # "tubesnya ada apa aja ya",
     # "prnya ada apa aj",
@@ -480,7 +480,7 @@ tests = [
     # "Apa aj deadline yang dimiliki sejauh ini?",
     # "Hri ini ada apa aja",
     # "Buat beberapa hari ke depan ada kuis apa aja?",
-    # "Deadline tugas IF2211 itu kapan?",
+    # "Deadline tugas IF2200 itu kapan?",
     # "Apa saja deadline antara 20/04/2021 sampai 23-05-2021?",
     # "2 Minggu ke dpan ada praktikum apa aj?",
     # "Tugas buat 2 hari kedepan",
